@@ -11,7 +11,6 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.testng.annotations.Test;
 
@@ -29,7 +28,7 @@ import static org.junit.Assert.assertThat;
         DirtiesContextTestExecutionListener.class})
 @Test
 @TestPropertySource(locations = {"classpath:test.properties"})
-public class AppStartupTest extends AbstractTestNGSpringContextTests {
+public class AppStartupTest extends AbstractAcceptanceTest {
 
     @Value("${local.server.port}")
     private int serverPort;
