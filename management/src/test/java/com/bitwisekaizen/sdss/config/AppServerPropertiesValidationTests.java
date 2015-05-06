@@ -13,6 +13,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 public class AppServerPropertiesValidationTests {
+
     private Validator validator;
     private AppServerProperties appServerProperties;
 
