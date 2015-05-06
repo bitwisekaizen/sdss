@@ -31,7 +31,7 @@ public class IscsiTargetService {
      * @param iscsiTarget ISCSI target to create
      * @return the created ISCSI target.
      */
-    public UniqueIscsiTarget createIscsiTarget(IscsiTarget iscsiTarget) {
+    public UniqueIscsiTarget createUniqueIscsiTarget(IscsiTarget iscsiTarget) {
         UniqueIscsiTargetEntity uniqueIscsiTargetEntity =
                 iscsiTargetRepository.save(convertToIscsiTargetEntity(iscsiTarget, storageAgentClient));
         storageAgentClient.createIscsiTarget(iscsiTarget);
@@ -45,7 +45,7 @@ public class IscsiTargetService {
      * @param uuid UUID of the ISCSI target to get
      * @throws IscsiTargetNotFoundException if target is not found
      */
-    public UniqueIscsiTarget getIscsiTarget(String uuid) throws IscsiTargetNotFoundException {
+    public UniqueIscsiTarget getUniqueIscsiTarget(String uuid) throws IscsiTargetNotFoundException {
         UniqueIscsiTargetEntity uniqueIscsiTargetEntity = iscsiTargetRepository.findByUuid(uuid);
         if (uniqueIscsiTargetEntity == null) {
             throw new IscsiTargetNotFoundException(uuid);
@@ -59,7 +59,7 @@ public class IscsiTargetService {
      *
      * @return all the ISCSI targets in the system.
      */
-    public List<UniqueIscsiTarget> getAllIscsiTargets() {
+    public List<UniqueIscsiTarget> getAllUniqueIscsiTargets() {
         List<UniqueIscsiTarget> iscsiTargets = new ArrayList<>();
         for (UniqueIscsiTargetEntity uniqueIscsiTargetEntity : iscsiTargetRepository.findAll()) {
             iscsiTargets.add(convertToUniqueIscsiTarget(uniqueIscsiTargetEntity));
@@ -74,7 +74,7 @@ public class IscsiTargetService {
      * @param uuid UUID of the ISCSI target to delete
      * @throws IscsiTargetNotFoundException if target is not found
      */
-    public void deleteIscsiTarget(String uuid) throws IscsiTargetNotFoundException {
+    public void deleteIscsiUniqueTarget(String uuid) throws IscsiTargetNotFoundException {
         UniqueIscsiTargetEntity uniqueIscsiTargetEntity = iscsiTargetRepository.findByUuid(uuid);
         if (uniqueIscsiTargetEntity == null) {
             throw new IscsiTargetNotFoundException(uuid);

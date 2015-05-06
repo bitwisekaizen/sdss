@@ -12,7 +12,9 @@ import org.testng.annotations.Test;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -30,16 +32,16 @@ public class IscsiTargetManagementTest extends AbstractAcceptanceTest {
 
     @AfterMethod
     public void afterMethod() {
-        deleteAllIscsiTargets();
+        deleteAllUniqueIscsiTargets();
     }
 
     @Test
     public void canCreateIscsiTargets() {
         IscsiTarget targetToCreate = IscsiTargetBuilder.anIscsiTarget().build();
 
-        UniqueIscsiTarget targetCreated = createIscsiTarget(targetToCreate);
+        UniqueIscsiTarget targetCreated = createUniqueIscsiTarget(targetToCreate);
 
-        UniqueIscsiTarget uniqueIscsiTargetRetrieved = getIscsiTarget(targetCreated.getUuid());
+        UniqueIscsiTarget uniqueIscsiTargetRetrieved = getUniqueIscsiTarget(targetCreated.getUuid());
         assertThat(uniqueIscsiTargetRetrieved, notNullValue());
         assertThat(targetCreated.getIscsiTarget(), equalTo(targetToCreate));
         assertThat(targetCreated.getUuid(), notNullValue());
@@ -50,10 +52,10 @@ public class IscsiTargetManagementTest extends AbstractAcceptanceTest {
     public void cannotCreateIscsiTargetWithDuplicateTargetName() {
         IscsiTarget targetToCreate = IscsiTargetBuilder.anIscsiTarget().build();
 
-        createIscsiTarget(targetToCreate);
+        createUniqueIscsiTarget(targetToCreate);
 
         try {
-            createIscsiTarget(IscsiTargetBuilder.anIscsiTarget().withTargetName(targetToCreate.getTargetName()).build());
+            createUniqueIscsiTarget(IscsiTargetBuilder.anIscsiTarget().withTargetName(targetToCreate.getTargetName()).build());
             fail("Expected exception as duplicated target name is not allowed.");
         } catch (ForbiddenException e) {
         }
@@ -61,22 +63,22 @@ public class IscsiTargetManagementTest extends AbstractAcceptanceTest {
 
     @Test(expectedExceptions = BadRequestException.class)
     public void cannotCreateIscsiTargetIfValidationFails() {
-        createIscsiTarget(IscsiTargetBuilder.anIscsiTarget().withTargetName("").build());
+        createUniqueIscsiTarget(IscsiTargetBuilder.anIscsiTarget().withTargetName("").build());
     }
 
     @Test
     public void canDeleteIscsiTargets() {
-        UniqueIscsiTarget uniqueIscsiTargetCreated = createIscsiTarget(IscsiTargetBuilder.anIscsiTarget().build());
+        UniqueIscsiTarget uniqueIscsiTargetCreated = createUniqueIscsiTarget(IscsiTargetBuilder.anIscsiTarget().build());
 
-        deleteIscsiTarget(uniqueIscsiTargetCreated);
+        deleteUniqueIscsiTarget(uniqueIscsiTargetCreated);
 
-        UniqueIscsiTarget uniqueIscsiTarget = getIscsiTarget(uniqueIscsiTargetCreated.getUuid());
+        UniqueIscsiTarget uniqueIscsiTarget = getUniqueIscsiTarget(uniqueIscsiTargetCreated.getUuid());
         assertThat(uniqueIscsiTarget, notNullValue());
     }
 
     @Test(expectedExceptions = NotFoundException.class)
     public void cannotDeleteAnIscsiTargetIfItDoesNotExist() {
-        deleteIscsiTarget(UniqueIscsiTargetBuilder.aUniqueIscsiTarget().build());
+        deleteUniqueIscsiTarget(UniqueIscsiTargetBuilder.aUniqueIscsiTarget().build());
     }
 
     @Test
@@ -88,7 +90,7 @@ public class IscsiTargetManagementTest extends AbstractAcceptanceTest {
 
         List<UniqueIscsiTarget> uniqueIscsiTargetsCreated = TaskHelper.submitAllTasksToExecutor(callables);
 
-        List<UniqueIscsiTarget> uniqueIscsiTargets = getAllIscsiTargets();
+        List<UniqueIscsiTarget> uniqueIscsiTargets = getAllUniqueIscsiTargets();
         for (UniqueIscsiTarget uniqueIscsiTargetSpecCreated : uniqueIscsiTargetsCreated) {
             assertThat(uniqueIscsiTargets, hasItem(uniqueIscsiTargetSpecCreated));
         }
@@ -98,7 +100,7 @@ public class IscsiTargetManagementTest extends AbstractAcceptanceTest {
     public void canConcurrentlyDeleteIscsiTargets() {
         List<UniqueIscsiTarget> uniqueIscsiTargetsCreated = new ArrayList<>();
         for (int createCount = 0; createCount < 5; createCount++) {
-            uniqueIscsiTargetsCreated.add(createIscsiTarget(IscsiTargetBuilder.anIscsiTarget().build()));
+            uniqueIscsiTargetsCreated.add(createUniqueIscsiTarget(IscsiTargetBuilder.anIscsiTarget().build()));
         }
 
         List<Callable<Void>> callables = new ArrayList<>();
@@ -108,7 +110,7 @@ public class IscsiTargetManagementTest extends AbstractAcceptanceTest {
 
         TaskHelper.submitAllTasksToExecutor(callables);
 
-        List<UniqueIscsiTarget> uniqueIscsiTargetsReceived = getAllIscsiTargets();
+        List<UniqueIscsiTarget> uniqueIscsiTargetsReceived = getAllUniqueIscsiTargets();
         for (UniqueIscsiTarget uniqueIscsiTargetSpecToDelete : uniqueIscsiTargetsCreated) {
             assertThat(uniqueIscsiTargetsReceived, not(hasItem(uniqueIscsiTargetSpecToDelete)));
         }
@@ -118,7 +120,7 @@ public class IscsiTargetManagementTest extends AbstractAcceptanceTest {
         return new Callable<UniqueIscsiTarget>() {
             @Override
             public UniqueIscsiTarget call() throws Exception {
-                return createIscsiTarget(webTarget, iscsiTarget);
+                return createUniqueIscsiTarget(webTarget, iscsiTarget);
             }
         };
     }
@@ -127,43 +129,44 @@ public class IscsiTargetManagementTest extends AbstractAcceptanceTest {
         return new Callable<Void>() {
             @Override
             public Void call() throws Exception {
-                deleteIscsiTarget(webTarget, uniqueIscsiTarget);
+                deleteUniqueIscsiTarget(webTarget, uniqueIscsiTarget);
 
                 return null;
             }
         };
     }
-    
-    private WebTarget createClient() {
-        return createClient(null);
+
+    private void deleteAllUniqueIscsiTargets() {
+        for (UniqueIscsiTarget uniqueIscsiTarget : getAllUniqueIscsiTargets()) {
+            deleteUniqueIscsiTarget(uniqueIscsiTarget);
+        }
     }
 
-    private void deleteAllIscsiTargets() {
-
+    private UniqueIscsiTarget getUniqueIscsiTarget(String uuid) {
+        return getUniqueIscsiTarget(webTarget, uuid);
     }
 
-    private UniqueIscsiTarget getIscsiTarget(String uuid) {
-        return null;
+    private UniqueIscsiTarget getUniqueIscsiTarget(WebTarget webTarget, String uuid) {
+        return webTarget.path("api").path("uniqueiscsitargets").path(uuid).request().get(UniqueIscsiTarget.class);
     }
 
-    private UniqueIscsiTarget createIscsiTarget(IscsiTarget targetToCreate) {
-        return null;
+    private UniqueIscsiTarget createUniqueIscsiTarget(IscsiTarget targetToCreate) {
+        return createUniqueIscsiTarget(webTarget, targetToCreate);
     }
 
-    public List<UniqueIscsiTarget> getAllIscsiTargets() {
-        return null;
+    private UniqueIscsiTarget createUniqueIscsiTarget(WebTarget webTarget, IscsiTarget targetToCreate) {
+        return webTarget.path("api").path("uniqueiscsitargets").request().post(Entity.json(targetToCreate), UniqueIscsiTarget.class);
     }
 
-    private UniqueIscsiTarget createIscsiTarget(WebTarget webTarget, IscsiTarget targetToCreate) {
-        return null;
+    private void deleteUniqueIscsiTarget(UniqueIscsiTarget iscsiTarget) {
+        deleteUniqueIscsiTarget(webTarget, iscsiTarget);
     }
 
-
-    private void deleteIscsiTarget(UniqueIscsiTarget uniqueIscsiTarget) {
-
+    private void deleteUniqueIscsiTarget(WebTarget webTarget, UniqueIscsiTarget iscsiTarget) {
+        webTarget.path("api").path("uniqueiscsitargets").path(iscsiTarget.getUuid()).request().delete(byte[].class);
     }
 
-    private void deleteIscsiTarget(WebTarget webTarget, UniqueIscsiTarget uniqueIscsiTarget) {
-
+    public List<UniqueIscsiTarget> getAllUniqueIscsiTargets() {
+        return webTarget.path("api").path("uniqueiscsitargets").request().get(new GenericType<List<UniqueIscsiTarget>>() {});
     }
 }

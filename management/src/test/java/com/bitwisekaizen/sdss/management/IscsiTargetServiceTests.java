@@ -55,7 +55,7 @@ public class IscsiTargetServiceTests {
         when(iscsiTargetRepository.save(any(UniqueIscsiTargetEntity.class))).thenReturn(
                 anIscsiTargetEntityFrom(iscsiTarget).withStorageIpAddress(STORAGE_IP).build());
 
-        UniqueIscsiTarget uniqueIscsiTarget = iscsiTargetService.createIscsiTarget(iscsiTarget);
+        UniqueIscsiTarget uniqueIscsiTarget = iscsiTargetService.createUniqueIscsiTarget(iscsiTarget);
 
         verify(iscsiTargetRepository).save(argThat(entityThatMatches(iscsiTarget)));
         verify(storageAgentClient).createIscsiTarget(iscsiTarget);
@@ -70,7 +70,7 @@ public class IscsiTargetServiceTests {
         UniqueIscsiTargetEntity uniqueIscsiTargetEntity = anIscsiTargetEntity().build();
         when(iscsiTargetRepository.findByUuid(uniqueIscsiTargetEntity.getUuid())).thenReturn(uniqueIscsiTargetEntity);
 
-        UniqueIscsiTarget uniqueIscsiTarget = iscsiTargetService.getIscsiTarget(uniqueIscsiTargetEntity.getUuid());
+        UniqueIscsiTarget uniqueIscsiTarget = iscsiTargetService.getUniqueIscsiTarget(uniqueIscsiTargetEntity.getUuid());
 
         assertThat(uniqueIscsiTarget, notNullValue());
         assertThat(uniqueIscsiTarget, entityThatMatches(uniqueIscsiTargetEntity));
@@ -82,7 +82,7 @@ public class IscsiTargetServiceTests {
         when(iscsiTargetRepository.findByUuid(uniqueIscsiTargetEntity.getUuid())).thenReturn(null);
 
         try {
-            iscsiTargetService.getIscsiTarget(uniqueIscsiTargetEntity.getUuid());
+            iscsiTargetService.getUniqueIscsiTarget(uniqueIscsiTargetEntity.getUuid());
             Assert.fail("Expected IscsiTargetNotFoundException but none occurred");
         } catch (IscsiTargetNotFoundException e) {
         }
@@ -94,7 +94,7 @@ public class IscsiTargetServiceTests {
                 anIscsiTargetEntity().build());
         when(iscsiTargetRepository.findAll()).thenReturn(iscsiTargetEntities);
 
-        List<UniqueIscsiTarget> uniqueIscsiTargets = iscsiTargetService.getAllIscsiTargets();
+        List<UniqueIscsiTarget> uniqueIscsiTargets = iscsiTargetService.getAllUniqueIscsiTargets();
 
         assertThat(uniqueIscsiTargets, notNullValue());
         assertThat(uniqueIscsiTargets, hasSize(iscsiTargetEntities.size()));
@@ -108,7 +108,7 @@ public class IscsiTargetServiceTests {
         UniqueIscsiTargetEntity uniqueIscsiTargetEntity = anIscsiTargetEntity().build();
         when(iscsiTargetRepository.findByUuid(uniqueIscsiTargetEntity.getUuid())).thenReturn(uniqueIscsiTargetEntity);
 
-        iscsiTargetService.deleteIscsiTarget(uniqueIscsiTargetEntity.getUuid());
+        iscsiTargetService.deleteIscsiUniqueTarget(uniqueIscsiTargetEntity.getUuid());
 
         verify(iscsiTargetRepository).delete(uniqueIscsiTargetEntity.getId());
         verify(storageAgentClient).deleteIscsiTarget(uniqueIscsiTargetEntity.getUuid());
@@ -120,7 +120,7 @@ public class IscsiTargetServiceTests {
         when(iscsiTargetRepository.findByUuid(uuid)).thenReturn(null);
 
         try {
-            iscsiTargetService.deleteIscsiTarget(uuid);
+            iscsiTargetService.deleteIscsiUniqueTarget(uuid);
             Assert.fail("Expected IscsiTargetNotFoundException but none occurred");
         } catch (IscsiTargetNotFoundException e) {
         }

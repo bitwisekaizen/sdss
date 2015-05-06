@@ -7,6 +7,7 @@ import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.RequestEntityProcessing;
 import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -15,6 +16,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.testng.annotations.BeforeClass;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -30,13 +32,25 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 @TestExecutionListeners(inheritListeners = false, listeners = {
         DependencyInjectionTestExecutionListener.class,
         DirtiesContextTestExecutionListener.class})
-@TestPropertySource(properties = "tail.autoStartup = false", locations = {"classpath:test.properties"})
+@TestPropertySource(locations = {"classpath:test.properties"})
 public class AbstractAcceptanceTest extends AbstractTestNGSpringContextTests {
 
     private static final boolean TRACE_HTTP = false;
     private static final boolean PRINT_ENTITY = false;
 
-    protected WebTarget createClient(String serverBaseUrl) {
+    @Value("${local.server.port}")
+    private int serverPort;
+
+    protected WebTarget webTarget;
+
+    @BeforeClass(alwaysRun = true)
+    public void beforeClass() {
+        webTarget = createClient();
+    }
+
+    protected WebTarget createClient() {
+        String serverBaseUrl = "http://127.0.0.1:" + serverPort;
+
         ClientConfig clientConfig = new ClientConfig().connectorProvider(new ApacheConnectorProvider());
         // https://java.net/jira/browse/JERSEY-2373
         clientConfig.property(ClientProperties.REQUEST_ENTITY_PROCESSING, RequestEntityProcessing.BUFFERED);
