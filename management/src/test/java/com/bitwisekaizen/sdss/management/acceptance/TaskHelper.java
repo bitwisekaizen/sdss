@@ -1,8 +1,7 @@
-package com.bitwisekaizen.sdss.acceptance;
+package com.bitwisekaizen.sdss.management.acceptance;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.List;

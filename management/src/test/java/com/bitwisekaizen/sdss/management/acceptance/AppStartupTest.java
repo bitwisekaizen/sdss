@@ -1,7 +1,7 @@
-package com.bitwisekaizen.sdss.acceptance;
+package com.bitwisekaizen.sdss.management.acceptance;
 
-import com.bitwisekaizen.sdss.config.AppServerProperties;
-import com.bitwisekaizen.sdss.config.ApplicationConfig;
+import com.bitwisekaizen.sdss.management.config.AppServerProperties;
+import com.bitwisekaizen.sdss.management.config.ApplicationConfig;
 import org.hamcrest.Matchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

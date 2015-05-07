@@ -1,4 +1,4 @@
-package com.bitwisekaizen.sdss.validation;
+package com.bitwisekaizen.sdss.management.validation;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

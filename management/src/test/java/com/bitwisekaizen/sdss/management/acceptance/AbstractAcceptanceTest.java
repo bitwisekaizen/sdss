@@ -1,6 +1,6 @@
-package com.bitwisekaizen.sdss.acceptance;
+package com.bitwisekaizen.sdss.management.acceptance;
 
-import com.bitwisekaizen.sdss.config.ApplicationConfig;
+import com.bitwisekaizen.sdss.management.config.ApplicationConfig;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;

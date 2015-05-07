@@ -1,5 +1,6 @@
-package com.bitwisekaizen.sdss.config;
+package com.bitwisekaizen.sdss.management.config;
 
+import com.bitwisekaizen.sdss.management.config.AppServerProperties;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;

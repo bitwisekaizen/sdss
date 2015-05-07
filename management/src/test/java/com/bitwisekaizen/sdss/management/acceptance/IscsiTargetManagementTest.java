@@ -1,7 +1,9 @@
-package com.bitwisekaizen.sdss.acceptance;
+package com.bitwisekaizen.sdss.management.acceptance;
 
-import com.bitwisekaizen.sdss.dto.UniqueIscsiTarget;
-import com.bitwisekaizen.sdss.dto.IscsiTarget;
+import com.bitwisekaizen.sdss.management.dto.IscsiTargetBuilder;
+import com.bitwisekaizen.sdss.management.dto.UniqueIscsiTarget;
+import com.bitwisekaizen.sdss.management.dto.IscsiTarget;
+import com.bitwisekaizen.sdss.management.dto.UniqueIscsiTargetBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterMethod;
@@ -15,9 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import static com.bitwisekaizen.sdss.acceptance.IscsiTargetManagementTest.UNIMPLEMENTED;
-import static com.bitwisekaizen.sdss.dto.UniqueIscsiTargetBuilder.aUniqueIscsiTarget;
-import static com.bitwisekaizen.sdss.dto.IscsiTargetBuilder.anIscsiTarget;
+import static com.bitwisekaizen.sdss.management.acceptance.IscsiTargetManagementTest.UNIMPLEMENTED;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
@@ -35,7 +35,7 @@ public class IscsiTargetManagementTest extends AbstractAcceptanceTest {
 
     @Test
     public void canCreateIscsiTargets() {
-        IscsiTarget targetToCreate = anIscsiTarget().build();
+        IscsiTarget targetToCreate = IscsiTargetBuilder.anIscsiTarget().build();
 
         UniqueIscsiTarget targetCreated = createIscsiTarget(targetToCreate);
 
@@ -48,12 +48,12 @@ public class IscsiTargetManagementTest extends AbstractAcceptanceTest {
 
     @Test
     public void cannotCreateIscsiTargetWithDuplicateTargetName() {
-        IscsiTarget targetToCreate = anIscsiTarget().build();
+        IscsiTarget targetToCreate = IscsiTargetBuilder.anIscsiTarget().build();
 
         createIscsiTarget(targetToCreate);
 
         try {
-            createIscsiTarget(anIscsiTarget().withTargetName(targetToCreate.getTargetName()).build());
+            createIscsiTarget(IscsiTargetBuilder.anIscsiTarget().withTargetName(targetToCreate.getTargetName()).build());
             fail("Expected exception as duplicated target name is not allowed.");
         } catch (ForbiddenException e) {
         }
@@ -61,12 +61,12 @@ public class IscsiTargetManagementTest extends AbstractAcceptanceTest {
 
     @Test(expectedExceptions = BadRequestException.class)
     public void cannotCreateIscsiTargetIfValidationFails() {
-        createIscsiTarget(anIscsiTarget().withTargetName("").build());
+        createIscsiTarget(IscsiTargetBuilder.anIscsiTarget().withTargetName("").build());
     }
 
     @Test
     public void canDeleteIscsiTargets() {
-        UniqueIscsiTarget uniqueIscsiTargetCreated = createIscsiTarget(anIscsiTarget().build());
+        UniqueIscsiTarget uniqueIscsiTargetCreated = createIscsiTarget(IscsiTargetBuilder.anIscsiTarget().build());
 
         deleteIscsiTarget(uniqueIscsiTargetCreated);
 
@@ -76,14 +76,14 @@ public class IscsiTargetManagementTest extends AbstractAcceptanceTest {
 
     @Test(expectedExceptions = NotFoundException.class)
     public void cannotDeleteAnIscsiTargetIfItDoesNotExist() {
-        deleteIscsiTarget(aUniqueIscsiTarget().build());
+        deleteIscsiTarget(UniqueIscsiTargetBuilder.aUniqueIscsiTarget().build());
     }
 
     @Test
     public void canConcurrentlyCreateIscsiTargets() {
         List<Callable<UniqueIscsiTarget>> callables = new ArrayList<>();
         for (int createCount = 0; createCount < 5; createCount++) {
-            callables.add(createCallableToCreateTarget(createClient(), anIscsiTarget().build()));
+            callables.add(createCallableToCreateTarget(createClient(), IscsiTargetBuilder.anIscsiTarget().build()));
         }
 
         List<UniqueIscsiTarget> uniqueIscsiTargetsCreated = TaskHelper.submitAllTasksToExecutor(callables);
@@ -98,7 +98,7 @@ public class IscsiTargetManagementTest extends AbstractAcceptanceTest {
     public void canConcurrentlyDeleteIscsiTargets() {
         List<UniqueIscsiTarget> uniqueIscsiTargetsCreated = new ArrayList<>();
         for (int createCount = 0; createCount < 5; createCount++) {
-            uniqueIscsiTargetsCreated.add(createIscsiTarget(anIscsiTarget().build()));
+            uniqueIscsiTargetsCreated.add(createIscsiTarget(IscsiTargetBuilder.anIscsiTarget().build()));
         }
 
         List<Callable<Void>> callables = new ArrayList<>();

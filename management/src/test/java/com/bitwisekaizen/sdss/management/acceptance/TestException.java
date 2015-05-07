@@ -1,4 +1,4 @@
-package com.bitwisekaizen.sdss.acceptance;
+package com.bitwisekaizen.sdss.management.acceptance;
 
 /**
  * Exception thrown by the tests.  This is mainly used to avoid throwing checked exceptions.

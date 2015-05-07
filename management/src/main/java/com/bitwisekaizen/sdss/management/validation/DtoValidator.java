@@ -1,4 +1,4 @@
-package com.bitwisekaizen.sdss.validation;
+package com.bitwisekaizen.sdss.management.validation;
 
 
 import org.slf4j.Logger;

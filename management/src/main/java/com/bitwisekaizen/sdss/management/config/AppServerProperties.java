@@ -1,4 +1,4 @@
-package com.bitwisekaizen.sdss.config;
+package com.bitwisekaizen.sdss.management.config;
 
 import org.hibernate.validator.constraints.Range;
 import org.springframework.boot.context.properties.ConfigurationProperties;

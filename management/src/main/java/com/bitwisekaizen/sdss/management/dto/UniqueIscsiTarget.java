@@ -1,4 +1,4 @@
-package com.bitwisekaizen.sdss.dto;
+package com.bitwisekaizen.sdss.management.dto;
 
 /**
  * Unique ISCSI target currently managed by the SDSS.

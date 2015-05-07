@@ -1,4 +1,4 @@
-package com.bitwisekaizen.sdss.config;
+package com.bitwisekaizen.sdss.management.config;
 
 import org.flywaydb.core.Flyway;
 import org.h2.Driver;
