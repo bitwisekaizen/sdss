@@ -1,5 +1,8 @@
 package com.bitwisekaizen.sdss.management.dto;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 /**
  * Unique ISCSI target currently managed by the SDSS.
  */
@@ -45,5 +48,13 @@ public class UniqueIscsiTarget {
      */
     public IscsiTarget getIscsiTarget() {
         return iscsiTarget;
+    }
+
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 }

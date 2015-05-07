@@ -51,7 +51,7 @@ public class ApplicationConfig {
         LocalContainerEntityManagerFactoryBean lef = new LocalContainerEntityManagerFactoryBean();
         lef.setDataSource(dataSource);
         lef.setJpaVendorAdapter(jpaVendorAdapter);
-        lef.setPackagesToScan("com.bitwisekaizen.sdss.entities");
+        lef.setPackagesToScan("com.bitwisekaizen.sdss.management.entity");
         lef.setDataSource(dataSource());
         lef.setJpaProperties(jpaProperties());
         lef.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());
