@@ -1,4 +1,4 @@
-package com.bitwisekaizen.sdss.management;
+package com.bitwisekaizen.sdss.management.service;
 
 import javax.ws.rs.NotFoundException;
 

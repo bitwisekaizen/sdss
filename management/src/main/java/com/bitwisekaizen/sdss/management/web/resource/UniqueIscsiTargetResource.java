@@ -1,6 +1,6 @@
 package com.bitwisekaizen.sdss.management.web.resource;
 
-import com.bitwisekaizen.sdss.management.IscsiTargetNotFoundException;
+import com.bitwisekaizen.sdss.management.service.IscsiTargetNotFoundException;
 import com.bitwisekaizen.sdss.management.dto.IscsiTarget;
 import com.bitwisekaizen.sdss.management.dto.UniqueIscsiTarget;
 import org.slf4j.Logger;

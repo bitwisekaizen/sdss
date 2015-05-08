@@ -1,12 +1,11 @@
 package com.bitwisekaizen.sdss.management.service;
 
-import com.bitwisekaizen.sdss.management.IscsiTargetNotFoundException;
 import com.bitwisekaizen.sdss.management.agent.StorageAgentClient;
 import com.bitwisekaizen.sdss.management.dto.IscsiTarget;
 import com.bitwisekaizen.sdss.management.dto.UniqueIscsiTarget;
 import com.bitwisekaizen.sdss.management.entity.InitiatorIqnEntity;
 import com.bitwisekaizen.sdss.management.entity.UniqueIscsiTargetEntity;
-import com.bitwisekaizen.sdss.management.repository.IscsiTargetRepository;
+import com.bitwisekaizen.sdss.management.repository.UniqueIscsiTargetRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,12 +15,12 @@ import java.util.List;
  */
 public class IscsiTargetService {
 
-    private IscsiTargetRepository iscsiTargetRepository;
+    private UniqueIscsiTargetRepository uniqueIscsiTargetRepository;
     private StorageAgentClient storageAgentClient;
 
-    public IscsiTargetService(IscsiTargetRepository iscsiTargetRepository,
+    public IscsiTargetService(UniqueIscsiTargetRepository uniqueIscsiTargetRepository,
                               StorageAgentClient storageAgentClient) {
-        this.iscsiTargetRepository = iscsiTargetRepository;
+        this.uniqueIscsiTargetRepository = uniqueIscsiTargetRepository;
         this.storageAgentClient = storageAgentClient;
     }
 
@@ -33,7 +32,7 @@ public class IscsiTargetService {
      */
     public UniqueIscsiTarget createUniqueIscsiTarget(IscsiTarget iscsiTarget) {
         UniqueIscsiTargetEntity uniqueIscsiTargetEntity =
-                iscsiTargetRepository.save(convertToIscsiTargetEntity(iscsiTarget, storageAgentClient));
+                uniqueIscsiTargetRepository.save(convertToIscsiTargetEntity(iscsiTarget, storageAgentClient));
         storageAgentClient.createIscsiTarget(iscsiTarget);
 
         return convertToUniqueIscsiTarget(uniqueIscsiTargetEntity);
@@ -46,7 +45,7 @@ public class IscsiTargetService {
      * @throws IscsiTargetNotFoundException if target is not found
      */
     public UniqueIscsiTarget getUniqueIscsiTarget(String uuid) throws IscsiTargetNotFoundException {
-        UniqueIscsiTargetEntity uniqueIscsiTargetEntity = iscsiTargetRepository.findByUuid(uuid);
+        UniqueIscsiTargetEntity uniqueIscsiTargetEntity = uniqueIscsiTargetRepository.findByUuid(uuid);
         if (uniqueIscsiTargetEntity == null) {
             throw new IscsiTargetNotFoundException(uuid);
         }
@@ -61,7 +60,7 @@ public class IscsiTargetService {
      */
     public List<UniqueIscsiTarget> getAllUniqueIscsiTargets() {
         List<UniqueIscsiTarget> iscsiTargets = new ArrayList<>();
-        for (UniqueIscsiTargetEntity uniqueIscsiTargetEntity : iscsiTargetRepository.findAll()) {
+        for (UniqueIscsiTargetEntity uniqueIscsiTargetEntity : uniqueIscsiTargetRepository.findAll()) {
             iscsiTargets.add(convertToUniqueIscsiTarget(uniqueIscsiTargetEntity));
         }
 
@@ -75,12 +74,12 @@ public class IscsiTargetService {
      * @throws IscsiTargetNotFoundException if target is not found
      */
     public void deleteIscsiUniqueTarget(String uuid) throws IscsiTargetNotFoundException {
-        UniqueIscsiTargetEntity uniqueIscsiTargetEntity = iscsiTargetRepository.findByUuid(uuid);
+        UniqueIscsiTargetEntity uniqueIscsiTargetEntity = uniqueIscsiTargetRepository.findByUuid(uuid);
         if (uniqueIscsiTargetEntity == null) {
             throw new IscsiTargetNotFoundException(uuid);
         }
 
-        iscsiTargetRepository.delete(uniqueIscsiTargetEntity.getId());
+        uniqueIscsiTargetRepository.delete(uniqueIscsiTargetEntity.getUuid());
         storageAgentClient.deleteIscsiTarget(uniqueIscsiTargetEntity.getUuid());
     }
 
@@ -98,12 +97,12 @@ public class IscsiTargetService {
 
     private UniqueIscsiTarget convertToUniqueIscsiTarget(UniqueIscsiTargetEntity uniqueIscsiTargetEntity) {
         IscsiTarget iscsiTarget = convertToIscsiTarget(uniqueIscsiTargetEntity);
-        return new UniqueIscsiTarget(uniqueIscsiTargetEntity.getUuid(), uniqueIscsiTargetEntity.getStorageIpAddress(), iscsiTarget);
+        return new UniqueIscsiTarget(uniqueIscsiTargetEntity.getUuid(), uniqueIscsiTargetEntity.getStorageHost(), iscsiTarget);
     }
 
     private IscsiTarget convertToIscsiTarget(UniqueIscsiTargetEntity uniqueIscsiTargetEntity) {
         List<String> hostIscsiQualifiedNames = new ArrayList<>();
-        for (InitiatorIqnEntity initiatorIqnEntity : uniqueIscsiTargetEntity.getHostIscsiQualifiedNames()) {
+        for (InitiatorIqnEntity initiatorIqnEntity : uniqueIscsiTargetEntity.getInitiatorIqnEntities()) {
             hostIscsiQualifiedNames.add(initiatorIqnEntity.getIqn());
         }
 

@@ -3,6 +3,6 @@ package com.bitwisekaizen.sdss.management.repository;
 import com.bitwisekaizen.sdss.management.entity.UniqueIscsiTargetEntity;
 import org.springframework.data.repository.CrudRepository;
 
-public interface IscsiTargetRepository extends CrudRepository<UniqueIscsiTargetEntity, Long> {
+public interface UniqueIscsiTargetRepository extends CrudRepository<UniqueIscsiTargetEntity, String> {
     UniqueIscsiTargetEntity findByUuid(String uuid);
 }
