@@ -8,7 +8,7 @@ CREATE TABLE unique_iscsi_target (
 
 CREATE TABLE initiator_iqn (
     uuid VARCHAR_IGNORECASE(36) NOT NULL,
-    iqn VARCHAR(256) NOT NULL UNIQUE,
+    iqn VARCHAR(256) NOT NULL,
     unique_iscsi_target_uuid VARCHAR_IGNORECASE(36),
     PRIMARY KEY (uuid),
     CONSTRAINT fk_unique_iscsi_target FOREIGN KEY(unique_iscsi_target_uuid) REFERENCES unique_iscsi_target(uuid)
