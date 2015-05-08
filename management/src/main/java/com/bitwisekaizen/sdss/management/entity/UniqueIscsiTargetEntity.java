@@ -1,43 +1,50 @@
 package com.bitwisekaizen.sdss.management.entity;
 
+import com.google.common.annotations.VisibleForTesting;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
 import java.util.List;
 import java.util.UUID;
 
 /**
  * Entity that represents a unique ISCSI target in the system.
  */
+@Entity
+@Table(name = "unique_iscsi_target")
 public class UniqueIscsiTargetEntity {
 
-    private long id;
+    @Id
+    @Column(name = "uuid")
+    @GeneratedValue(generator = "system-uuid")
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    private String uuid;
 
-    private final String uuid;
-
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name="unique_iscsi_target_uuid", referencedColumnName = "uuid")
     private List<InitiatorIqnEntity> initiatorIqnEntities;
 
+    @Column(name = "capacity_mb")
     private int capacityInMb;
+
+    @Column(name = "target_name")
     private String targetName;
-    private String storageIpAddress;
+
+    @Column(name = "storage_host")
+    private String storageHost;
 
     protected UniqueIscsiTargetEntity() {
-        this.uuid = UUID.randomUUID().toString();
     }
 
     public UniqueIscsiTargetEntity(List<InitiatorIqnEntity> initiatorIqnEntities, int capacityInMb, String targetName,
-                                   String storageIpAddress) {
+                                   String storageHost) {
         this();
         this.initiatorIqnEntities = initiatorIqnEntities;
         this.capacityInMb = capacityInMb;
         this.targetName = targetName;
-        this.storageIpAddress = storageIpAddress;
-    }
-
-    /**
-     * Get the unique DB ID.
-     *
-     * @return ID of the ISCSI target.
-     */
-    public long getId() {
-        return id;
+        this.storageHost = storageHost;
     }
 
     /**
@@ -63,7 +70,7 @@ public class UniqueIscsiTargetEntity {
      *
      * @return the list of ISCSI qualified names of the hosts, permissible to access this target.
      */
-    public List<InitiatorIqnEntity> getHostIscsiQualifiedNames() {
+    public List<InitiatorIqnEntity> getInitiatorIqnEntities() {
         return initiatorIqnEntities;
     }
 
@@ -77,16 +84,29 @@ public class UniqueIscsiTargetEntity {
     }
 
     /**
-     * IP location on which this target exists.
+     * Host/IP location on which this target exists.
      *
-     * @return IP location on which this target exists.
+     * @return Host/IP location on which this target exists.
      */
-    public String getStorageIpAddress() {
-        return storageIpAddress;
+    public String getStorageHost() {
+        return storageHost;
     }
 
     @Override
     public String toString() {
-        return String.format("IscsiTargetEntity[id=%d, uuid='%s', targetName='%s']", id, uuid, targetName);
+        return String.format("IscsiTargetEntity[uuid='%s', targetName='%s']", uuid, targetName);
+    }
+
+    @VisibleForTesting
+    protected void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 }

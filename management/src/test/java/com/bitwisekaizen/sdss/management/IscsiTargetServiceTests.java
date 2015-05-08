@@ -4,7 +4,8 @@ import com.bitwisekaizen.sdss.management.agent.StorageAgentClient;
 import com.bitwisekaizen.sdss.management.dto.IscsiTarget;
 import com.bitwisekaizen.sdss.management.dto.UniqueIscsiTarget;
 import com.bitwisekaizen.sdss.management.entity.UniqueIscsiTargetEntity;
-import com.bitwisekaizen.sdss.management.repository.IscsiTargetRepository;
+import com.bitwisekaizen.sdss.management.repository.UniqueIscsiTargetRepository;
+import com.bitwisekaizen.sdss.management.service.IscsiTargetNotFoundException;
 import com.bitwisekaizen.sdss.management.service.IscsiTargetService;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
@@ -20,8 +21,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.bitwisekaizen.sdss.management.dto.IscsiTargetBuilder.anIscsiTarget;
-import static com.bitwisekaizen.sdss.management.entity.IscsiTargetEntityBuilder.anIscsiTargetEntity;
-import static com.bitwisekaizen.sdss.management.entity.IscsiTargetEntityBuilder.anIscsiTargetEntityFrom;
+import static com.bitwisekaizen.sdss.management.entity.UniqueIscsiTargetEntityBuilder.aUniqueIscsiTargetEntity;
+import static com.bitwisekaizen.sdss.management.entity.UniqueIscsiTargetEntityBuilder.aUniqueIscsiTargetEntityFrom;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Matchers.any;
@@ -34,7 +35,7 @@ public class IscsiTargetServiceTests {
     private static final String STORAGE_IP = "IP";
 
     @Mock
-    private IscsiTargetRepository iscsiTargetRepository;
+    private UniqueIscsiTargetRepository uniqueIscsiTargetRepository;
 
     @Mock
     private StorageAgentClient storageAgentClient;
@@ -52,12 +53,12 @@ public class IscsiTargetServiceTests {
     @Test
     public void canCreateIscsiTarget() {
         IscsiTarget iscsiTarget = anIscsiTarget().build();
-        when(iscsiTargetRepository.save(any(UniqueIscsiTargetEntity.class))).thenReturn(
-                anIscsiTargetEntityFrom(iscsiTarget).withStorageIpAddress(STORAGE_IP).build());
+        when(uniqueIscsiTargetRepository.save(any(UniqueIscsiTargetEntity.class))).thenReturn(
+                aUniqueIscsiTargetEntityFrom(iscsiTarget).withStorageHost(STORAGE_IP).build());
 
         UniqueIscsiTarget uniqueIscsiTarget = iscsiTargetService.createUniqueIscsiTarget(iscsiTarget);
 
-        verify(iscsiTargetRepository).save(argThat(entityThatMatches(iscsiTarget)));
+        verify(uniqueIscsiTargetRepository).save(argThat(entityThatMatches(iscsiTarget)));
         verify(storageAgentClient).createIscsiTarget(iscsiTarget);
         assertThat(uniqueIscsiTarget, notNullValue());
         assertThat(uniqueIscsiTarget.getIscsiTarget(), equalTo(iscsiTarget));
@@ -67,8 +68,8 @@ public class IscsiTargetServiceTests {
 
     @Test
     public void canGetIscsiTarget() {
-        UniqueIscsiTargetEntity uniqueIscsiTargetEntity = anIscsiTargetEntity().build();
-        when(iscsiTargetRepository.findByUuid(uniqueIscsiTargetEntity.getUuid())).thenReturn(uniqueIscsiTargetEntity);
+        UniqueIscsiTargetEntity uniqueIscsiTargetEntity = aUniqueIscsiTargetEntity().build();
+        when(uniqueIscsiTargetRepository.findByUuid(uniqueIscsiTargetEntity.getUuid())).thenReturn(uniqueIscsiTargetEntity);
 
         UniqueIscsiTarget uniqueIscsiTarget = iscsiTargetService.getUniqueIscsiTarget(uniqueIscsiTargetEntity.getUuid());
 
@@ -78,8 +79,8 @@ public class IscsiTargetServiceTests {
 
     @Test
     public void exceptionThrownIfIscsiTargetNotFound() {
-        UniqueIscsiTargetEntity uniqueIscsiTargetEntity = anIscsiTargetEntity().build();
-        when(iscsiTargetRepository.findByUuid(uniqueIscsiTargetEntity.getUuid())).thenReturn(null);
+        UniqueIscsiTargetEntity uniqueIscsiTargetEntity = aUniqueIscsiTargetEntity().build();
+        when(uniqueIscsiTargetRepository.findByUuid(uniqueIscsiTargetEntity.getUuid())).thenReturn(null);
 
         try {
             iscsiTargetService.getUniqueIscsiTarget(uniqueIscsiTargetEntity.getUuid());
@@ -90,9 +91,9 @@ public class IscsiTargetServiceTests {
 
     @Test
     public void canGetAllIscsiTargets() {
-        List<UniqueIscsiTargetEntity> iscsiTargetEntities = Arrays.asList(anIscsiTargetEntity().build(),
-                anIscsiTargetEntity().build());
-        when(iscsiTargetRepository.findAll()).thenReturn(iscsiTargetEntities);
+        List<UniqueIscsiTargetEntity> iscsiTargetEntities = Arrays.asList(aUniqueIscsiTargetEntity().build(),
+                aUniqueIscsiTargetEntity().build());
+        when(uniqueIscsiTargetRepository.findAll()).thenReturn(iscsiTargetEntities);
 
         List<UniqueIscsiTarget> uniqueIscsiTargets = iscsiTargetService.getAllUniqueIscsiTargets();
 
@@ -105,19 +106,19 @@ public class IscsiTargetServiceTests {
 
     @Test
     public void canDeleteIscsiTarget() {
-        UniqueIscsiTargetEntity uniqueIscsiTargetEntity = anIscsiTargetEntity().build();
-        when(iscsiTargetRepository.findByUuid(uniqueIscsiTargetEntity.getUuid())).thenReturn(uniqueIscsiTargetEntity);
+        UniqueIscsiTargetEntity uniqueIscsiTargetEntity = aUniqueIscsiTargetEntity().build();
+        when(uniqueIscsiTargetRepository.findByUuid(uniqueIscsiTargetEntity.getUuid())).thenReturn(uniqueIscsiTargetEntity);
 
         iscsiTargetService.deleteIscsiUniqueTarget(uniqueIscsiTargetEntity.getUuid());
 
-        verify(iscsiTargetRepository).delete(uniqueIscsiTargetEntity.getId());
+        verify(uniqueIscsiTargetRepository).delete(uniqueIscsiTargetEntity.getUuid());
         verify(storageAgentClient).deleteIscsiTarget(uniqueIscsiTargetEntity.getUuid());
     }
 
     @Test
     public void cannotDeleteNonExistingIscsiTarget() {
         String uuid = UUID.randomUUID().toString();
-        when(iscsiTargetRepository.findByUuid(uuid)).thenReturn(null);
+        when(uniqueIscsiTargetRepository.findByUuid(uuid)).thenReturn(null);
 
         try {
             iscsiTargetService.deleteIscsiUniqueTarget(uuid);
@@ -136,7 +137,7 @@ public class IscsiTargetServiceTests {
                     return false;
                 }
                 if (iscsiTarget.getHostIscsiQualifiedNames().size() !=
-                        uniqueIscsiTargetEntity.getHostIscsiQualifiedNames().size()) {
+                        uniqueIscsiTargetEntity.getInitiatorIqnEntities().size()) {
                     return false;
                 }
 
@@ -158,7 +159,7 @@ public class IscsiTargetServiceTests {
                     return false;
                 }
                 if (uniqueIscsiTarget.getIscsiTarget().getHostIscsiQualifiedNames().size() !=
-                        uniqueIscsiTargetEntity.getHostIscsiQualifiedNames().size()) {
+                        uniqueIscsiTargetEntity.getInitiatorIqnEntities().size()) {
                     return false;
                 }
 
