@@ -15,7 +15,7 @@ import static com.google.common.collect.Lists.*;
 import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @SpringApplicationConfiguration(classes = ApplicationConfig.class)
 @TestPropertySource(locations = {"classpath:test.properties"})

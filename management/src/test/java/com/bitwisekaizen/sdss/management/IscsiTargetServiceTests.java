@@ -5,8 +5,10 @@ import com.bitwisekaizen.sdss.management.dto.IscsiTarget;
 import com.bitwisekaizen.sdss.management.dto.UniqueIscsiTarget;
 import com.bitwisekaizen.sdss.management.entity.UniqueIscsiTargetEntity;
 import com.bitwisekaizen.sdss.management.repository.UniqueIscsiTargetRepository;
+import com.bitwisekaizen.sdss.management.service.DuplicateTargetNameException;
 import com.bitwisekaizen.sdss.management.service.IscsiTargetNotFoundException;
 import com.bitwisekaizen.sdss.management.service.IscsiTargetService;
+import com.bitwisekaizen.sdss.management.validation.DtoValidator;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import org.mockito.InjectMocks;
@@ -27,18 +29,22 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @Test
 public class IscsiTargetServiceTests {
-    private static final String STORAGE_IP = "IP";
+    private static final String STORAGE_HOST = "i'm a host";
 
     @Mock
     private UniqueIscsiTargetRepository uniqueIscsiTargetRepository;
 
     @Mock
     private StorageAgentClient storageAgentClient;
+
+    @Mock
+    private DtoValidator dtoValidator;
 
     @InjectMocks
     private IscsiTargetService iscsiTargetService;
@@ -47,23 +53,39 @@ public class IscsiTargetServiceTests {
     public void beforeMethod() {
         MockitoAnnotations.initMocks(this);
 
-        when(storageAgentClient.getStorageIpAddress()).thenReturn(STORAGE_IP);
+        when(storageAgentClient.getStorageHost()).thenReturn(STORAGE_HOST);
     }
 
     @Test
     public void canCreateIscsiTarget() {
         IscsiTarget iscsiTarget = anIscsiTarget().build();
         when(uniqueIscsiTargetRepository.save(any(UniqueIscsiTargetEntity.class))).thenReturn(
-                aUniqueIscsiTargetEntityFrom(iscsiTarget).withStorageHost(STORAGE_IP).build());
+                aUniqueIscsiTargetEntityFrom(iscsiTarget).withStorageHost(STORAGE_HOST).build());
 
         UniqueIscsiTarget uniqueIscsiTarget = iscsiTargetService.createUniqueIscsiTarget(iscsiTarget);
 
+        verify(dtoValidator).validate(iscsiTarget);
         verify(uniqueIscsiTargetRepository).save(argThat(entityThatMatches(iscsiTarget)));
         verify(storageAgentClient).createIscsiTarget(iscsiTarget);
         assertThat(uniqueIscsiTarget, notNullValue());
         assertThat(uniqueIscsiTarget.getIscsiTarget(), equalTo(iscsiTarget));
         assertThat(uniqueIscsiTarget.getUuid(), notNullValue());
-        assertThat(uniqueIscsiTarget.getStorageIpAddress(), equalTo(STORAGE_IP));
+        assertThat(uniqueIscsiTarget.getStorageIpAddress(), equalTo(STORAGE_HOST));
+    }
+
+    @Test
+    public void cannotCreateIscsiTargetWithDuplicateName() {
+        IscsiTarget iscsiTarget = anIscsiTarget().build();
+        when(uniqueIscsiTargetRepository.findByTargetName(iscsiTarget.getTargetName())).thenReturn(
+                aUniqueIscsiTargetEntityFrom(iscsiTarget).withStorageHost(STORAGE_HOST).build());
+        try {
+            iscsiTargetService.createUniqueIscsiTarget(iscsiTarget);
+            Assert.fail("Expected IscsiTargetNotFoundException but none occurred");
+        } catch (DuplicateTargetNameException e) {
+        }
+
+        verify(uniqueIscsiTargetRepository, never()).save(any(UniqueIscsiTargetEntity.class));
+        verify(storageAgentClient, never()).createIscsiTarget(any(IscsiTarget.class));
     }
 
     @Test

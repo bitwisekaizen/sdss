@@ -7,9 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.junit.Assert.assertThat;
-
 /**
  * Helper to invoke multiple concurrent tasks.
  */

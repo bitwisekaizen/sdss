@@ -1,16 +1,16 @@
 package com.bitwisekaizen.sdss.management.acceptance;
 
-import com.bitwisekaizen.sdss.management.dto.IscsiTargetBuilder;
 import com.bitwisekaizen.sdss.management.dto.UniqueIscsiTarget;
 import com.bitwisekaizen.sdss.management.dto.IscsiTarget;
 import com.bitwisekaizen.sdss.management.dto.UniqueIscsiTargetBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
 import javax.ws.rs.BadRequestException;
-import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
@@ -19,16 +19,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import static com.bitwisekaizen.sdss.management.acceptance.IscsiTargetManagementTest.UNIMPLEMENTED;
+import static com.bitwisekaizen.sdss.management.dto.IscsiTargetBuilder.anIscsiTarget;
 import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.testng.Assert.fail;
 
-@Test(groups = UNIMPLEMENTED)
+@Test
 public class IscsiTargetManagementTest extends AbstractAcceptanceTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(IscsiTargetManagementTest.class);
-    public static final String UNIMPLEMENTED = "unimplemented";
 
     @AfterMethod
     public void afterMethod() {
@@ -37,7 +35,7 @@ public class IscsiTargetManagementTest extends AbstractAcceptanceTest {
 
     @Test
     public void canCreateIscsiTargets() {
-        IscsiTarget targetToCreate = IscsiTargetBuilder.anIscsiTarget().build();
+        IscsiTarget targetToCreate = anIscsiTarget().build();
 
         UniqueIscsiTarget targetCreated = createUniqueIscsiTarget(targetToCreate);
 
@@ -50,30 +48,34 @@ public class IscsiTargetManagementTest extends AbstractAcceptanceTest {
 
     @Test
     public void cannotCreateIscsiTargetWithDuplicateTargetName() {
-        IscsiTarget targetToCreate = IscsiTargetBuilder.anIscsiTarget().build();
+        IscsiTarget targetToCreate = anIscsiTarget().build();
 
         createUniqueIscsiTarget(targetToCreate);
 
         try {
-            createUniqueIscsiTarget(IscsiTargetBuilder.anIscsiTarget().withTargetName(targetToCreate.getTargetName()).build());
+            createUniqueIscsiTarget(anIscsiTarget().withTargetName(targetToCreate.getTargetName()).build());
             fail("Expected exception as duplicated target name is not allowed.");
-        } catch (ForbiddenException e) {
+        } catch (ClientErrorException e) {
+            assertThat(e.getResponse().getStatus(), equalTo(HttpStatus.CONFLICT.value()));
         }
     }
 
     @Test(expectedExceptions = BadRequestException.class)
     public void cannotCreateIscsiTargetIfValidationFails() {
-        createUniqueIscsiTarget(IscsiTargetBuilder.anIscsiTarget().withTargetName("").build());
+        createUniqueIscsiTarget(anIscsiTarget().withTargetName("").build());
     }
 
     @Test
     public void canDeleteIscsiTargets() {
-        UniqueIscsiTarget uniqueIscsiTargetCreated = createUniqueIscsiTarget(IscsiTargetBuilder.anIscsiTarget().build());
+        UniqueIscsiTarget uniqueIscsiTargetCreated = createUniqueIscsiTarget(anIscsiTarget().build());
 
         deleteUniqueIscsiTarget(uniqueIscsiTargetCreated);
 
-        UniqueIscsiTarget uniqueIscsiTarget = getUniqueIscsiTarget(uniqueIscsiTargetCreated.getUuid());
-        assertThat(uniqueIscsiTarget, notNullValue());
+        try {
+            getUniqueIscsiTarget(uniqueIscsiTargetCreated.getUuid());
+            fail("Expected NotFoundException but no exception thrown.");
+        } catch (NotFoundException e) {
+        }
     }
 
     @Test(expectedExceptions = NotFoundException.class)
@@ -85,7 +87,7 @@ public class IscsiTargetManagementTest extends AbstractAcceptanceTest {
     public void canConcurrentlyCreateIscsiTargets() {
         List<Callable<UniqueIscsiTarget>> callables = new ArrayList<>();
         for (int createCount = 0; createCount < 5; createCount++) {
-            callables.add(createCallableToCreateTarget(createClient(), IscsiTargetBuilder.anIscsiTarget().build()));
+            callables.add(createCallableToCreateTarget(createClient(), anIscsiTarget().build()));
         }
 
         List<UniqueIscsiTarget> uniqueIscsiTargetsCreated = TaskHelper.submitAllTasksToExecutor(callables);
@@ -100,7 +102,7 @@ public class IscsiTargetManagementTest extends AbstractAcceptanceTest {
     public void canConcurrentlyDeleteIscsiTargets() {
         List<UniqueIscsiTarget> uniqueIscsiTargetsCreated = new ArrayList<>();
         for (int createCount = 0; createCount < 5; createCount++) {
-            uniqueIscsiTargetsCreated.add(createUniqueIscsiTarget(IscsiTargetBuilder.anIscsiTarget().build()));
+            uniqueIscsiTargetsCreated.add(createUniqueIscsiTarget(anIscsiTarget().build()));
         }
 
         List<Callable<Void>> callables = new ArrayList<>();

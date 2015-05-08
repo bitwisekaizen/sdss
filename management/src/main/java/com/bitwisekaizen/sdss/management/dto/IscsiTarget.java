@@ -2,6 +2,7 @@ package com.bitwisekaizen.sdss.management.dto;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import java.util.List;
 
@@ -12,6 +13,8 @@ public class IscsiTarget {
 
     private List<String> hostIscsiQualifiedNames;
     private int capacityInMb;
+
+    @NotEmpty(message = "target.name.empty")
     private String targetName;
 
     // Json serialization

@@ -8,9 +8,11 @@ import org.springframework.stereotype.Component;
 /**
  * Client that can interact with the storage agent.
  */
+@Component
 public class StorageAgentClient {
     private String ipAddress;
 
+    @Autowired
     public StorageAgentClient(@Value("${app.storage.agent.ip}") String ipAddress) {
         this.ipAddress = ipAddress;
     }
@@ -34,11 +36,11 @@ public class StorageAgentClient {
     }
 
     /**
-     * Get the IP address that this client currently connects to.
+     * Get the host/IP address that this client currently connects to.
      *
-     * @return the IP address that this client currently connects to.
+     * @return the host/IP address that this client currently connects to.
      */
-    public String getStorageIpAddress() {
+    public String getStorageHost() {
         return ipAddress;
     }
 }

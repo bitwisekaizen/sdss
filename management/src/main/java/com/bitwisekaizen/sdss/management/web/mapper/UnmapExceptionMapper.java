@@ -1,4 +1,4 @@
-package com.bitwisekaizen.sdss.management.web;
+package com.bitwisekaizen.sdss.management.web.mapper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

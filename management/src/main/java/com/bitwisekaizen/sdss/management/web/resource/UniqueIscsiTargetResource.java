@@ -3,8 +3,10 @@ package com.bitwisekaizen.sdss.management.web.resource;
 import com.bitwisekaizen.sdss.management.service.IscsiTargetNotFoundException;
 import com.bitwisekaizen.sdss.management.dto.IscsiTarget;
 import com.bitwisekaizen.sdss.management.dto.UniqueIscsiTarget;
+import com.bitwisekaizen.sdss.management.service.IscsiTargetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
@@ -22,6 +24,9 @@ import java.util.List;
 public class UniqueIscsiTargetResource {
     final static Logger logger = LoggerFactory.getLogger(UniqueIscsiTargetResource.class);
 
+    @Autowired
+    private IscsiTargetService iscsiTargetService;
+
     /**
      * Create the ISCSI target with the given spec.
      *
@@ -32,7 +37,7 @@ public class UniqueIscsiTargetResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public UniqueIscsiTarget createUniqueIscsiTarget(IscsiTarget iscsiTarget) {
-        return new UniqueIscsiTarget("uuid", "storageip", iscsiTarget);
+        return iscsiTargetService.createUniqueIscsiTarget(iscsiTarget);
     }
 
     /**
@@ -45,7 +50,7 @@ public class UniqueIscsiTargetResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{uuid}")
     public UniqueIscsiTarget getUniqueIscsiTarget(@PathParam("uuid") String uuid) {
-        return new UniqueIscsiTarget("uuid", "storageip", new IscsiTarget(new ArrayList<String>(), 0, ""));
+        return iscsiTargetService.getUniqueIscsiTarget(uuid);
     }
 
     /**
@@ -57,7 +62,7 @@ public class UniqueIscsiTargetResource {
     @DELETE
     @Path("{uuid}")
     public void deleteUniqueIscsiTarget(@PathParam("uuid") String uuid) {
-        logger.info("deleted");
+        iscsiTargetService.deleteIscsiUniqueTarget(uuid);
     }
 
     /**
@@ -68,7 +73,7 @@ public class UniqueIscsiTargetResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<UniqueIscsiTarget> getAllUniqueIscsiTargets() {
-        return Arrays.asList(new UniqueIscsiTarget("uuid", "storageip", new IscsiTarget(new ArrayList<String>(), 0, "")));
+        return iscsiTargetService.getAllUniqueIscsiTargets();
     }
 
 }

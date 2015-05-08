@@ -6,22 +6,31 @@ import com.bitwisekaizen.sdss.management.dto.UniqueIscsiTarget;
 import com.bitwisekaizen.sdss.management.entity.InitiatorIqnEntity;
 import com.bitwisekaizen.sdss.management.entity.UniqueIscsiTargetEntity;
 import com.bitwisekaizen.sdss.management.repository.UniqueIscsiTargetRepository;
+import com.bitwisekaizen.sdss.management.validation.DtoValidator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Service to manage ISCSI targets such as creation and deletion.
  */
+@Service
+@Transactional
 public class IscsiTargetService {
 
     private UniqueIscsiTargetRepository uniqueIscsiTargetRepository;
     private StorageAgentClient storageAgentClient;
+    private DtoValidator dtoValidator;
 
+    @Autowired
     public IscsiTargetService(UniqueIscsiTargetRepository uniqueIscsiTargetRepository,
-                              StorageAgentClient storageAgentClient) {
+                              StorageAgentClient storageAgentClient, DtoValidator dtoValidator) {
         this.uniqueIscsiTargetRepository = uniqueIscsiTargetRepository;
         this.storageAgentClient = storageAgentClient;
+        this.dtoValidator = dtoValidator;
     }
 
     /**
@@ -31,6 +40,12 @@ public class IscsiTargetService {
      * @return the created ISCSI target.
      */
     public UniqueIscsiTarget createUniqueIscsiTarget(IscsiTarget iscsiTarget) {
+        dtoValidator.validate(iscsiTarget);
+
+        if (uniqueIscsiTargetRepository.findByTargetName(iscsiTarget.getTargetName()) != null) {
+            throw new DuplicateTargetNameException(iscsiTarget.getTargetName());
+        }
+
         UniqueIscsiTargetEntity uniqueIscsiTargetEntity =
                 uniqueIscsiTargetRepository.save(convertToIscsiTargetEntity(iscsiTarget, storageAgentClient));
         storageAgentClient.createIscsiTarget(iscsiTarget);
@@ -92,7 +107,7 @@ public class IscsiTargetService {
         }
 
         return new UniqueIscsiTargetEntity(initiatorIqnEntities, iscsiTarget.getCapacityInMb(),
-                iscsiTarget.getTargetName(), storageAgentClient.getStorageIpAddress());
+                iscsiTarget.getTargetName(), storageAgentClient.getStorageHost());
     }
 
     private UniqueIscsiTarget convertToUniqueIscsiTarget(UniqueIscsiTargetEntity uniqueIscsiTargetEntity) {
