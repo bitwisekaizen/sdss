@@ -15,6 +15,7 @@
 
     <modules>
         <module>management</module>
+        <module>agent</module>
     </modules>
 
     <dependencyManagement>
