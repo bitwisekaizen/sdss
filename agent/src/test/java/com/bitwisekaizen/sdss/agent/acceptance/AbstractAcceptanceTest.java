@@ -1,6 +1,7 @@
 package com.bitwisekaizen.sdss.agent.acceptance;
 
 import com.bitwisekaizen.sdss.agent.config.ApplicationConfig;
+import com.bitwisekaizen.sdss.agentclient.StorageAgentClient;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
@@ -41,14 +42,14 @@ public class AbstractAcceptanceTest extends AbstractTestNGSpringContextTests {
     @Value("${local.server.port}")
     private int serverPort;
 
-    protected WebTarget webTarget;
+    protected StorageAgentClient storageAgentClient;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        webTarget = createClient();
+        storageAgentClient = new StorageAgentClient(createClient());
     }
 
-    protected WebTarget createClient() {
+    private WebTarget createClient() {
         String serverBaseUrl = "http://127.0.0.1:" + serverPort;
 
         ClientConfig clientConfig = new ClientConfig().connectorProvider(new ApacheConnectorProvider());

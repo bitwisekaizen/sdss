@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * Client that can interact with the storage agent.
+ *
+ * @todo: replace with StorageAgentClient in agent-client module
  */
 @Component
 public class StorageAgentClient {

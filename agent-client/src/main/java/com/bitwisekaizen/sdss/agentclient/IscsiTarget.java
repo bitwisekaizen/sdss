@@ -1,15 +1,11 @@
-package com.bitwisekaizen.sdss.management.dto;
+package com.bitwisekaizen.sdss.agentclient;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import java.util.List;
 
 /**
  * Spec that describes the ISCSI target
- *
- * @todo: replace with IscsiTarget in agent-client module
  */
 public class IscsiTarget {
 
@@ -20,7 +16,8 @@ public class IscsiTarget {
     private String targetName;
 
     // Json serialization
-    private IscsiTarget(){}
+    private IscsiTarget() {
+    }
 
     public IscsiTarget(List<String> hostIscsiQualifiedNames, int capacityInMb, String targetName) {
         this.hostIscsiQualifiedNames = hostIscsiQualifiedNames;
@@ -53,13 +50,5 @@ public class IscsiTarget {
      */
     public String getTargetName() {
         return targetName;
-    }
-
-    public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
-    }
-
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
     }
 }
