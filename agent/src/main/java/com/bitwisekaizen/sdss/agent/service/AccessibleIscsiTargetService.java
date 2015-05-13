@@ -2,6 +2,7 @@ package com.bitwisekaizen.sdss.agent.service;
 
 import com.bitwisekaizen.sdss.agentclient.AccessibleIscsiTarget;
 import com.bitwisekaizen.sdss.agentclient.IscsiTarget;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,6 +13,17 @@ import java.util.List;
 @Service
 public class AccessibleIscsiTargetService {
 
+    private AccessibleIscsiTargetRepository accessibleIscsiTargetRepository;
+    private LioBackedIscsiTargetService lioBackedStorageService;
+
+    @Autowired
+    public AccessibleIscsiTargetService(AccessibleIscsiTargetRepository accessibleIscsiTargetRepository,
+                                        LioBackedIscsiTargetService lioBackedStorageService) {
+
+        this.accessibleIscsiTargetRepository = accessibleIscsiTargetRepository;
+        this.lioBackedStorageService = lioBackedStorageService;
+    }
+
     /**
      * Create the ISCSI target with the given spec.
      *
@@ -20,7 +32,16 @@ public class AccessibleIscsiTargetService {
      * @throws DuplicateTargetNameException if the target name already exists.
      */
     public AccessibleIscsiTarget createAccessbileIscsiTarget(IscsiTarget iscsiTarget) {
-        return null;
+        AccessibleIscsiTarget accessibleIscsiTarget = accessibleIscsiTargetRepository.findByTargetName(
+                iscsiTarget.getTargetName());
+        if (accessibleIscsiTarget != null) {
+            throw new DuplicateTargetNameException(iscsiTarget.getTargetName());
+        }
+
+        accessibleIscsiTarget = lioBackedStorageService.createIscsiTarget(iscsiTarget);
+        accessibleIscsiTargetRepository.save(accessibleIscsiTarget);
+
+        return accessibleIscsiTarget;
     }
 
     /**
@@ -30,7 +51,13 @@ public class AccessibleIscsiTargetService {
      * @throws IscsiTargetNotFoundException if target is not found
      */
     public void deleteAccessibleIscsiTarget(String targetName) {
+        AccessibleIscsiTarget accessibleIscsiTarget = accessibleIscsiTargetRepository.findByTargetName(targetName);
+        if (accessibleIscsiTarget == null) {
+            throw new IscsiTargetNotFoundException(targetName);
+        }
 
+        lioBackedStorageService.delete(targetName);
+        accessibleIscsiTargetRepository.delete(targetName);
     }
 
     /**
@@ -39,6 +66,6 @@ public class AccessibleIscsiTargetService {
      * @return all the ISCSI targets in the system.
      */
     public List<AccessibleIscsiTarget> getAllAccessibleIscsiTargets() {
-        return null;
+        return accessibleIscsiTargetRepository.findAll();
     }
 }

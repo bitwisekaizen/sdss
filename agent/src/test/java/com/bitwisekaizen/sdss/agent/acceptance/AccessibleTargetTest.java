@@ -2,8 +2,8 @@ package com.bitwisekaizen.sdss.agent.acceptance;
 
 import com.bitwisekaizen.sdss.agent.config.ApplicationConfig;
 import com.bitwisekaizen.sdss.agentclient.IscsiTarget;
-import com.bitwisekaizen.sdss.agentclient.StorageAgentClient;
 import com.bitwisekaizen.sdss.agentclient.AccessibleIscsiTarget;
+import com.bitwisekaizen.sdss.agentclient.IscsiTargetBuilder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
@@ -20,7 +20,8 @@ import org.testng.annotations.Test;
 
 import java.util.List;
 
-import static com.bitwisekaizen.sdss.agentclient.AgentIscsiTargetBuilder.anIscsiTarget;
+import static com.bitwisekaizen.sdss.agentclient.AccessibleIscsiTargetBuilder.anAccessibleIscsiTarget;
+import static com.bitwisekaizen.sdss.agentclient.IscsiTargetBuilder.anIscsiTarget;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;

@@ -15,6 +15,7 @@ public class AccessibleIscsiTarget {
     }
 
     public AccessibleIscsiTarget(IscsiTarget iscsiTarget, List<String> storageNetworkAddresses) {
+        this.iscsiTarget = iscsiTarget;
         this.storageNetworkAddresses = storageNetworkAddresses;
     }
 

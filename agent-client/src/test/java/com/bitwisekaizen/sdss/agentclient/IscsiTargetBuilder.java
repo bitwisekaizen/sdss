@@ -8,15 +8,15 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class AgentIscsiTargetBuilder implements Builder<IscsiTarget> {
+public class IscsiTargetBuilder implements Builder<IscsiTarget> {
     private static final Random random = new Random();
 
     private List<String> hostIscsiQualifiedNames = new ArrayList<>();
     private int capacityInMb = ThreadLocalRandom.current().nextInt(100, 2000);
     private String targetName = UUID.randomUUID().toString();
 
-    public static AgentIscsiTargetBuilder anIscsiTarget() {
-        return new AgentIscsiTargetBuilder();
+    public static IscsiTargetBuilder anIscsiTarget() {
+        return new IscsiTargetBuilder();
     }
 
     @Override
@@ -24,7 +24,7 @@ public class AgentIscsiTargetBuilder implements Builder<IscsiTarget> {
         return new IscsiTarget(hostIscsiQualifiedNames, capacityInMb, targetName);
     }
 
-    public AgentIscsiTargetBuilder withTargetName(String targetName) {
+    public IscsiTargetBuilder withTargetName(String targetName) {
         this.targetName = targetName;
         return this;
     }
