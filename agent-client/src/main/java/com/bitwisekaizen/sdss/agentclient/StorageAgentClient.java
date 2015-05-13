@@ -1,7 +1,9 @@
 package com.bitwisekaizen.sdss.agentclient;
 
 
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 import java.util.List;
 
 /**
@@ -21,8 +23,8 @@ public class StorageAgentClient {
      * @param iscsiTarget target to create.
      */
     public AccessibleIscsiTarget createIscsiTarget(IscsiTarget iscsiTarget) {
-
-        return null;
+        return webTarget.path("api").path("accessibleiscsitargets").request().post(Entity.json(iscsiTarget),
+                AccessibleIscsiTarget.class);
     }
 
     /**
@@ -31,7 +33,7 @@ public class StorageAgentClient {
      * @param targetName name of the target to delete
      */
     public void deleteIscsiTarget(String targetName) {
-
+        webTarget.path("api").path("accessibleiscsitargets").path(targetName).request().delete(byte[].class);
     }
 
     /**
@@ -40,6 +42,7 @@ public class StorageAgentClient {
      * @return All the ISCSI targets on the agent.
      */
     public List<AccessibleIscsiTarget> getAllIscsiTargets() {
-        return null;
+        return webTarget.path("api").path("accessibleiscsitargets").request().get(
+                new GenericType<List<AccessibleIscsiTarget>>() {});
     }
 }

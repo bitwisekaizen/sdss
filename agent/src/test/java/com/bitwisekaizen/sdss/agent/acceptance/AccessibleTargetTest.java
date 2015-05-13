@@ -14,6 +14,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -34,6 +36,12 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 @Test(groups = "unimplemented")
 @TestPropertySource(locations = {"classpath:test.properties"})
 public class AccessibleTargetTest extends AbstractAcceptanceTest {
+
+    @BeforeMethod(alwaysRun = true)
+    @AfterMethod(alwaysRun = true)
+    public void setupMethod() {
+        deleteAllTargets();
+    }
 
     @Test
     public void canCreateIscsiTargetOnAgent() {
@@ -87,5 +95,11 @@ public class AccessibleTargetTest extends AbstractAcceptanceTest {
                 description.appendText("Expected " + expectedObject.toString() + " but got " + actualObject);
             }
         };
+    }
+
+    private void deleteAllTargets() {
+        for (AccessibleIscsiTarget accessibleIscsiTarget : storageAgentClient.getAllIscsiTargets()) {
+            storageAgentClient.deleteIscsiTarget(accessibleIscsiTarget.getTargetName());
+        }
     }
 }
