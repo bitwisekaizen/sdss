@@ -1,15 +1,26 @@
 package com.bitwisekaizen.sdss.agent.entity;
 
+import javax.persistence.*;
 import java.util.List;
 
 /**
  * Spec that describes the ISCSI target
  */
+@Entity
+@Table(name = "iscsi_target")
 public class IscsiTargetEntity {
 
-    private List<String> hostIscsiQualifiedNames;
-    private int capacityInMb;
+    @Id
+    @Column(name = "target_name")
     private String targetName;
+
+    @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
+    @Column(name = "iqn")
+    @CollectionTable(name = "host_iqn", joinColumns = @JoinColumn(name = "iscsi_target_target_name"))
+    private List<String> hostIscsiQualifiedNames;
+
+    @Column(name = "capacity_mb")
+    private int capacityInMb;
 
     // Json serialization
     private IscsiTargetEntity() {

@@ -16,7 +16,10 @@ public class IscsiTargetEntityBuilder implements Builder<IscsiTargetEntity> {
     private String targetName = UUID.randomUUID().toString();
 
     public static IscsiTargetEntityBuilder anIscsiTargetEntity() {
-        return new IscsiTargetEntityBuilder();
+        IscsiTargetEntityBuilder builder = new IscsiTargetEntityBuilder();
+        builder.hostIscsiQualifiedNames.add(UUID.randomUUID().toString());
+        builder.hostIscsiQualifiedNames.add(UUID.randomUUID().toString());
+        return builder;
     }
 
     @Override

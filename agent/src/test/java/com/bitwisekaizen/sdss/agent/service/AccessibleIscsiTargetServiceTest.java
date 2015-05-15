@@ -1,5 +1,7 @@
 package com.bitwisekaizen.sdss.agent.service;
 
+import com.bitwisekaizen.sdss.agent.repository.IscsiTargetEntityRepository;
+
 import com.bitwisekaizen.sdss.agent.entity.IscsiTargetEntity;
 import com.bitwisekaizen.sdss.agentclient.AccessibleIscsiTarget;
 import com.bitwisekaizen.sdss.agentclient.IscsiTarget;
@@ -31,7 +33,7 @@ import static org.unitils.reflectionassert.ReflectionAssert.assertReflectionEqua
 
 public class AccessibleIscsiTargetServiceTest {
     @Mock
-    private AccessibleIscsiTargetRepository accessibleIscsiTargetRepository;
+    private IscsiTargetEntityRepository accessibleIscsiTargetRepository;
 
     @Mock
     private LioBackedIscsiTargetService lioBackedStorageService;
@@ -51,7 +53,7 @@ public class AccessibleIscsiTargetServiceTest {
         IscsiTarget targetToCreate = anIscsiTarget().build();
         IscsiTargetEntity existingTarget01 = anIscsiTargetEntity().build();
         IscsiTargetEntity existingTarget02 = anIscsiTargetEntity().build();
-        when(accessibleIscsiTargetRepository.findByTargetName(targetToCreate.getTargetName())).thenReturn(null);
+        when(accessibleIscsiTargetRepository.findOne(targetToCreate.getTargetName())).thenReturn(null);
         when(accessibleIscsiTargetRepository.findAll()).thenReturn(newArrayList(existingTarget01, existingTarget02));
 
         AccessibleIscsiTarget targetCreated = accessibleIscsiTargetService.createAccessbileIscsiTarget(targetToCreate);
@@ -71,7 +73,7 @@ public class AccessibleIscsiTargetServiceTest {
     @Test
     public void throwExceptionIfTargetNameAlreadyExist() throws Exception {
         IscsiTarget targetToCreate = anIscsiTarget().build();
-        when(accessibleIscsiTargetRepository.findByTargetName(targetToCreate.getTargetName())).thenReturn(
+        when(accessibleIscsiTargetRepository.findOne(targetToCreate.getTargetName())).thenReturn(
                 anIscsiTargetEntity().build());
         try {
             accessibleIscsiTargetService.createAccessbileIscsiTarget(targetToCreate);
@@ -88,7 +90,7 @@ public class AccessibleIscsiTargetServiceTest {
         IscsiTargetEntity targetToDelete = anIscsiTargetEntity().build();
         IscsiTargetEntity targetToKeep01 = anIscsiTargetEntity().build();
         IscsiTargetEntity targetToKeep02 = anIscsiTargetEntity().build();
-        when(accessibleIscsiTargetRepository.findByTargetName(
+        when(accessibleIscsiTargetRepository.findOne(
                 targetToDelete.getTargetName())).thenReturn(targetToDelete);
         when(accessibleIscsiTargetRepository.findAll()).thenReturn(
                 newArrayList(targetToDelete, targetToKeep01, targetToKeep02));
@@ -106,7 +108,7 @@ public class AccessibleIscsiTargetServiceTest {
 
     @Test
     public void throwExceptionIfDeletingTargetThatDoesNotExist() throws Exception {
-        when(accessibleIscsiTargetRepository.findByTargetName(anyString())).thenReturn(null);
+        when(accessibleIscsiTargetRepository.findOne(anyString())).thenReturn(null);
 
         try {
             accessibleIscsiTargetService.deleteAccessibleIscsiTarget("target-name");
