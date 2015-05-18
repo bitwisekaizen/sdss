@@ -1,5 +1,7 @@
 package com.bitwisekaizen.sdss.agentclient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.List;
 
 /**
@@ -32,6 +34,7 @@ public class AccessibleIscsiTarget {
         return iscsiTarget;
     }
 
+    @JsonIgnore
     public String getTargetName() {
         return iscsiTarget.getTargetName();
     }

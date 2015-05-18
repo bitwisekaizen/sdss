@@ -49,7 +49,7 @@ public class AbstractAcceptanceTest extends AbstractTestNGSpringContextTests {
         storageAgentClient = new StorageAgentClient(createClient());
     }
 
-    private WebTarget createClient() {
+    protected WebTarget createClient() {
         String serverBaseUrl = "http://127.0.0.1:" + serverPort;
 
         ClientConfig clientConfig = new ClientConfig().connectorProvider(new ApacheConnectorProvider());

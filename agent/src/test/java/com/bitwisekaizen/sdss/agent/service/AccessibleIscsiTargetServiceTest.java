@@ -3,6 +3,7 @@ package com.bitwisekaizen.sdss.agent.service;
 import com.bitwisekaizen.sdss.agent.repository.IscsiTargetEntityRepository;
 
 import com.bitwisekaizen.sdss.agent.entity.IscsiTargetEntity;
+import com.bitwisekaizen.sdss.agent.util.ReflectionMatcherUtil;
 import com.bitwisekaizen.sdss.agentclient.AccessibleIscsiTarget;
 import com.bitwisekaizen.sdss.agentclient.IscsiTarget;
 import junit.framework.AssertionFailedError;
@@ -18,6 +19,7 @@ import org.testng.annotations.Test;
 import java.util.List;
 
 import static com.bitwisekaizen.sdss.agent.entity.IscsiTargetEntityBuilder.anIscsiTargetEntity;
+import static com.bitwisekaizen.sdss.agent.util.ReflectionMatcherUtil.reflectionMatching;
 import static com.bitwisekaizen.sdss.agentclient.IscsiTargetBuilder.anIscsiTarget;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Arrays.asList;
@@ -44,7 +46,7 @@ public class AccessibleIscsiTargetServiceTest {
     public void setupMethod() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        accessibleIscsiTargetService = new AccessibleIscsiTargetService(
+        accessibleIscsiTargetService = new AccessibleIscsiTargetService(asList("1.1.1.1","2.2.2.2"),
                 accessibleIscsiTargetRepository, lioBackedStorageService);
     }
 
@@ -180,26 +182,5 @@ public class AccessibleIscsiTargetServiceTest {
         };
     }
 
-    private <T> TypeSafeMatcher<T> reflectionMatching(final T expectedObject) {
-        return new TypeSafeMatcher<T>() {
-            public T actualObject;
 
-            @Override
-            protected boolean matchesSafely(T actualObject) {
-                this.actualObject = actualObject;
-                try {
-                    assertReflectionEquals(expectedObject, actualObject);
-                } catch (AssertionFailedError assertionFailedError) {
-                    return false;
-                }
-
-                return true;
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("Expected " + expectedObject.toString() + " but got " + actualObject);
-            }
-        };
-    }
 }

@@ -1,9 +1,11 @@
 package com.bitwisekaizen.sdss.agent.acceptance;
 
 import com.bitwisekaizen.sdss.agent.config.ApplicationConfig;
+import com.bitwisekaizen.sdss.agent.util.ReflectionMatcherUtil;
 import com.bitwisekaizen.sdss.agentclient.IscsiTarget;
 import com.bitwisekaizen.sdss.agentclient.AccessibleIscsiTarget;
-import com.bitwisekaizen.sdss.agentclient.IscsiTargetBuilder;
+import com.bitwisekaizen.sdss.agentclient.StorageAgentClient;
+import junit.framework.AssertionFailedError;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
@@ -17,13 +19,16 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.unitils.reflectionassert.ReflectionAssert;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
-import static com.bitwisekaizen.sdss.agentclient.AccessibleIscsiTargetBuilder.anAccessibleIscsiTarget;
+import static com.bitwisekaizen.sdss.agent.util.ReflectionMatcherUtil.reflectionMatching;
 import static com.bitwisekaizen.sdss.agentclient.IscsiTargetBuilder.anIscsiTarget;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 
@@ -34,7 +39,7 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 @TestExecutionListeners(inheritListeners = false, listeners = {
         DependencyInjectionTestExecutionListener.class,
         DirtiesContextTestExecutionListener.class})
-@Test(groups = "unimplemented")
+@Test
 @TestPropertySource(locations = {"classpath:test.properties"})
 public class AccessibleTargetTest extends AbstractAcceptanceTest {
 
@@ -52,7 +57,7 @@ public class AccessibleTargetTest extends AbstractAcceptanceTest {
         assertThat(iscsiTargetCreated, notNullValue());
         assertThat(iscsiTargetCreated.getStorageNetworkAddresses(), notNullValue());
         assertThat(iscsiTargetCreated.getStorageNetworkAddresses(), hasSize(2));
-        assertThat(iscsiTargetCreated.getIscsiTarget(), reflectionEqualsTo(iscsiTargetToCreate));
+        assertThat(iscsiTargetCreated.getIscsiTarget(), reflectionMatching(iscsiTargetToCreate));
 
         assertThat(allIscsiTargetsContains(iscsiTargetCreated), is(true));
     }
@@ -70,32 +75,70 @@ public class AccessibleTargetTest extends AbstractAcceptanceTest {
         assertThat(allIscsiTargetsContains(iscsiTargetCreated02), is(true));
     }
 
+    @Test
+    public void canConcurrentlyCreateIscsiTargets() {
+        List<Callable<AccessibleIscsiTarget>> callables = new ArrayList<>();
+        for (int createCount = 0; createCount < 5; createCount++) {
+            callables.add(createCallableToCreateTarget(anIscsiTarget().build()));
+        }
+
+        List<AccessibleIscsiTarget> targetsCreated = TaskHelper.submitAllTasksToExecutor(callables);
+
+        List<AccessibleIscsiTarget> targetsRetrieved = storageAgentClient.getAllIscsiTargets();
+        for (AccessibleIscsiTarget targetCreated : targetsCreated) {
+            assertThat(targetsRetrieved, hasItem(reflectionMatching(targetCreated)));
+        }
+    }
+
+    @Test
+    public void canConcurrentlyDeleteIscsiTargets() {
+        List<AccessibleIscsiTarget> targetsCreated = new ArrayList<>();
+        for (int createCount = 0; createCount < 5; createCount++) {
+            targetsCreated.add(storageAgentClient.createIscsiTarget(anIscsiTarget().build()));
+        }
+
+        List<Callable<Void>> callables = new ArrayList<>();
+        for (AccessibleIscsiTarget targetToDelete : targetsCreated) {
+            callables.add(createCallableToDeleteTarget(targetToDelete));
+        }
+
+        TaskHelper.submitAllTasksToExecutor(callables);
+
+        List<AccessibleIscsiTarget> targetsRetrieved = storageAgentClient.getAllIscsiTargets();
+        for (AccessibleIscsiTarget targetToDelete : targetsCreated) {
+            assertThat(targetsRetrieved, not(hasItem(reflectionMatching(targetToDelete))));
+        }
+    }
+
+    private Callable<AccessibleIscsiTarget> createCallableToCreateTarget(final IscsiTarget iscsiTarget) {
+        return new Callable<AccessibleIscsiTarget>() {
+            @Override
+            public AccessibleIscsiTarget call() throws Exception {
+                return new StorageAgentClient(createClient()).createIscsiTarget(iscsiTarget);
+            }
+        };
+    }
+
+    private Callable<Void> createCallableToDeleteTarget(final AccessibleIscsiTarget uniqueIscsiTarget) {
+        return new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                new StorageAgentClient(createClient()).deleteIscsiTarget(uniqueIscsiTarget.getTargetName());
+                return null;
+            }
+        };
+    }
     private boolean allIscsiTargetsContains(AccessibleIscsiTarget targetToCheck) {
         List<AccessibleIscsiTarget> targetsOnServer = storageAgentClient.getAllIscsiTargets();
         for (AccessibleIscsiTarget targetOnServer : targetsOnServer) {
-            if (EqualsBuilder.reflectionEquals(targetToCheck, targetOnServer)) {
+            try {
+                ReflectionAssert.assertReflectionEquals(targetToCheck, targetOnServer);
                 return true;
+            } catch (AssertionFailedError assertionFailedError) {
             }
         }
 
         return false;
-    }
-
-    private TypeSafeMatcher<Object> reflectionEqualsTo(final Object expectedObject) {
-        return new TypeSafeMatcher<Object>() {
-            public Object actualObject;
-
-            @Override
-            protected boolean matchesSafely(Object actualObject) {
-                this.actualObject = actualObject;
-                return EqualsBuilder.reflectionEquals(actualObject, expectedObject);
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("Expected " + expectedObject.toString() + " but got " + actualObject);
-            }
-        };
     }
 
     private void deleteAllTargets() {

@@ -5,6 +5,7 @@ import com.bitwisekaizen.sdss.agent.repository.IscsiTargetEntityRepository;
 import com.bitwisekaizen.sdss.agentclient.AccessibleIscsiTarget;
 import com.bitwisekaizen.sdss.agentclient.IscsiTarget;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,13 +23,14 @@ public class AccessibleIscsiTargetService {
     private IscsiTargetEntityRepository accessibleIscsiTargetRepository;
     private LioBackedIscsiTargetService lioBackedStorageService;
 
-    // @todo: talk to scott on where to get this value
     private List<String> storageNetworkAddresses = new ArrayList<>();
 
     @Autowired
-    public AccessibleIscsiTargetService(IscsiTargetEntityRepository accessibleIscsiTargetRepository,
+    public AccessibleIscsiTargetService(@Value("#{'${app.storage.network.addresses}'.split(',')}")
+                                            List<String> storageNetworkAddresses,
+                                        IscsiTargetEntityRepository accessibleIscsiTargetRepository,
                                         LioBackedIscsiTargetService lioBackedStorageService) {
-
+        this.storageNetworkAddresses = storageNetworkAddresses;
         this.accessibleIscsiTargetRepository = accessibleIscsiTargetRepository;
         this.lioBackedStorageService = lioBackedStorageService;
     }

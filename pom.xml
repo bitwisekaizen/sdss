@@ -173,6 +173,7 @@
                         <configuration>
                             <includes>
                                 <include>**/**Builder.class</include>
+                                <include>**/**Util.class</include>
                             </includes>
                         </configuration>
                     </execution>
