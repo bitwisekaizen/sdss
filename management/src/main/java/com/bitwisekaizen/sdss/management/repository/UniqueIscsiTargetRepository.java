@@ -1,7 +1,6 @@
 package com.bitwisekaizen.sdss.management.repository;
 
 import com.bitwisekaizen.sdss.management.entity.UniqueIscsiTargetEntity;
-import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.data.repository.CrudRepository;
 
 public interface UniqueIscsiTargetRepository extends CrudRepository<UniqueIscsiTargetEntity, String> {

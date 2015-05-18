@@ -1,5 +1,6 @@
 package com.bitwisekaizen.sdss.agent.service;
 
+import com.bitwisekaizen.sdss.agent.entity.IscsiTargetEntity;
 import com.bitwisekaizen.sdss.agentclient.AccessibleIscsiTarget;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,7 @@ public class AccessibleIscsiTargetRepository {
      *
      * @param accessibleIscsiTarget target to save.
      */
-    public void save(AccessibleIscsiTarget accessibleIscsiTarget) {
+    public void save(IscsiTargetEntity accessibleIscsiTarget) {
     }
 
     /**
@@ -25,7 +26,7 @@ public class AccessibleIscsiTargetRepository {
      * @param targetName target to find
      * @return target if found; else, null.
      */
-    public AccessibleIscsiTarget findByTargetName(String targetName) {
+    public IscsiTargetEntity findByTargetName(String targetName) {
         return null;
     }
 
@@ -43,7 +44,7 @@ public class AccessibleIscsiTargetRepository {
      *
      * @return all ISCSI targets.
      */
-    public List<AccessibleIscsiTarget> findAll() {
+    public List<IscsiTargetEntity> findAll() {
         return null;
     }
 }

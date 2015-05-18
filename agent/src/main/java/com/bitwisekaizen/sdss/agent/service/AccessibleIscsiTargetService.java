@@ -1,10 +1,13 @@
 package com.bitwisekaizen.sdss.agent.service;
 
+import com.bitwisekaizen.sdss.agent.entity.IscsiTargetEntity;
 import com.bitwisekaizen.sdss.agentclient.AccessibleIscsiTarget;
 import com.bitwisekaizen.sdss.agentclient.IscsiTarget;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -15,6 +18,9 @@ public class AccessibleIscsiTargetService {
 
     private AccessibleIscsiTargetRepository accessibleIscsiTargetRepository;
     private LioBackedIscsiTargetService lioBackedStorageService;
+
+    // @todo: talk to scott on where to get this value
+    private List<String> storageNetworkAddresses = new ArrayList<>();
 
     @Autowired
     public AccessibleIscsiTargetService(AccessibleIscsiTargetRepository accessibleIscsiTargetRepository,
@@ -32,16 +38,20 @@ public class AccessibleIscsiTargetService {
      * @throws DuplicateTargetNameException if the target name already exists.
      */
     public AccessibleIscsiTarget createAccessbileIscsiTarget(IscsiTarget iscsiTarget) {
-        AccessibleIscsiTarget accessibleIscsiTarget = accessibleIscsiTargetRepository.findByTargetName(
+        IscsiTargetEntity existingTarget = accessibleIscsiTargetRepository.findByTargetName(
                 iscsiTarget.getTargetName());
-        if (accessibleIscsiTarget != null) {
+        if (existingTarget != null) {
             throw new DuplicateTargetNameException(iscsiTarget.getTargetName());
         }
 
-        accessibleIscsiTarget = lioBackedStorageService.createIscsiTarget(iscsiTarget);
-        accessibleIscsiTargetRepository.save(accessibleIscsiTarget);
+        IscsiTargetEntity newTarget = convertToPersistenceEntity(iscsiTarget);
+        List<IscsiTargetEntity> targetsToUpdate = accessibleIscsiTargetRepository.findAll();
+        targetsToUpdate.add(newTarget);
 
-        return accessibleIscsiTarget;
+        lioBackedStorageService.updateTargets(convertToDto(targetsToUpdate));
+        accessibleIscsiTargetRepository.save(newTarget);
+
+        return convertToDto(newTarget);
     }
 
     /**
@@ -51,12 +61,22 @@ public class AccessibleIscsiTargetService {
      * @throws IscsiTargetNotFoundException if target is not found
      */
     public void deleteAccessibleIscsiTarget(String targetName) {
-        AccessibleIscsiTarget accessibleIscsiTarget = accessibleIscsiTargetRepository.findByTargetName(targetName);
-        if (accessibleIscsiTarget == null) {
+        IscsiTargetEntity existingTarget = accessibleIscsiTargetRepository.findByTargetName(targetName);
+        if (existingTarget == null) {
             throw new IscsiTargetNotFoundException(targetName);
         }
 
-        lioBackedStorageService.delete(targetName);
+        List<IscsiTargetEntity> entitiesToUpdate = accessibleIscsiTargetRepository.findAll();
+        Iterator<IscsiTargetEntity> iterator = entitiesToUpdate.iterator();
+        while (iterator.hasNext()) {
+            IscsiTargetEntity entity = iterator.next();
+            if (entity.getTargetName().equals(targetName)) {
+                iterator.remove();
+                break;
+            }
+        }
+
+        lioBackedStorageService.updateTargets(convertToDto(entitiesToUpdate));
         accessibleIscsiTargetRepository.delete(targetName);
     }
 
@@ -66,6 +86,28 @@ public class AccessibleIscsiTargetService {
      * @return all the ISCSI targets in the system.
      */
     public List<AccessibleIscsiTarget> getAllAccessibleIscsiTargets() {
-        return accessibleIscsiTargetRepository.findAll();
+        List<IscsiTargetEntity> entities = accessibleIscsiTargetRepository.findAll();
+        return convertToDto(entities);
+    }
+
+
+    private List<AccessibleIscsiTarget> convertToDto(List<IscsiTargetEntity> targetsToUpdate) {
+        List<AccessibleIscsiTarget> targetsConverted = new ArrayList<>();
+        for (IscsiTargetEntity entity : targetsToUpdate) {
+            targetsConverted.add(convertToDto(entity));
+        }
+
+        return targetsConverted;
+    }
+
+    private AccessibleIscsiTarget convertToDto(IscsiTargetEntity entity) {
+        IscsiTarget iscsiTarget = new IscsiTarget(
+                entity.getHostIscsiQualifiedNames(), entity.getCapacityInMb(), entity.getTargetName());
+        return new AccessibleIscsiTarget(iscsiTarget, storageNetworkAddresses);
+    }
+
+    private IscsiTargetEntity convertToPersistenceEntity(IscsiTarget iscsiTarget) {
+        return new IscsiTargetEntity(iscsiTarget.getHostIscsiQualifiedNames(),
+                iscsiTarget.getCapacityInMb(), iscsiTarget.getTargetName());
     }
 }
