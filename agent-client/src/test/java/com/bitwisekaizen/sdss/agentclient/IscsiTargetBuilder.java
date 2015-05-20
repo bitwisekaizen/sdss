@@ -28,4 +28,17 @@ public class IscsiTargetBuilder implements Builder<IscsiTarget> {
         this.targetName = targetName;
         return this;
     }
+
+    public IscsiTargetBuilder withCapacityInMb(int capacityInMb) {
+        this.capacityInMb = capacityInMb;
+        return this;
+    }
+
+    public IscsiTargetBuilder withIqns(String... iqns) {
+        for (String iqn : iqns) {
+            hostIscsiQualifiedNames.add(iqn);
+        }
+
+        return this;
+    }
 }

@@ -17,4 +17,9 @@ public class AccessibleIscsiTargetBuilder implements Builder<AccessibleIscsiTarg
     public AccessibleIscsiTarget build() {
         return new AccessibleIscsiTarget(iscsiTarget, storageNetworkAddresses);
     }
+
+    public AccessibleIscsiTargetBuilder withIscsiTarget(IscsiTargetBuilder iscsiTarget) {
+        this.iscsiTarget = iscsiTarget.build();
+        return this;
+    }
 }
