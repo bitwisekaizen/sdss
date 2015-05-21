@@ -41,7 +41,7 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
         DirtiesContextTestExecutionListener.class})
 @Test
 @TestPropertySource(locations = {"classpath:test.properties"})
-public class AccessibleTargetTest extends AbstractAcceptanceTest {
+public class AccessibleIscsiTargetTest extends AbstractAcceptanceTest {
 
     @BeforeMethod(alwaysRun = true)
     @AfterMethod(alwaysRun = true)

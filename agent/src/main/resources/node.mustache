@@ -1,0 +1,24 @@
+{
+   "infinio_iscsi":{
+      "storage_base":"/storage",
+      "luns":[
+        {{#decoratedIscsiTargets}}
+           {
+              "name":"{{value.iscsiTarget.targetName}}",
+              "size":"{{value.iscsiTarget.capacityInMb}}",
+              "mapped_iqns":[
+              {{#value.iscsiTarget.hostIscsiQualifiedNames}}
+                 "{{value}}"{{^last}},{{/last}}
+              {{/value.iscsiTarget.hostIscsiQualifiedNames}}
+              ]
+           }{{^last}},{{/last}}
+        {{/decoratedIscsiTargets}}
+      ],
+      "portals":[
+
+      ]
+   },
+   "run_list":[
+      "recipe[infinio_iscsi]"
+   ]
+}
