@@ -22,4 +22,9 @@ public class AccessibleIscsiTargetBuilder implements Builder<AccessibleIscsiTarg
         this.iscsiTarget = iscsiTarget.build();
         return this;
     }
+
+    public AccessibleIscsiTargetBuilder withStorageNetworkAddress(String storageNetworkAddress) {
+        this.storageNetworkAddresses.add(storageNetworkAddress);
+        return this;
+    }
 }

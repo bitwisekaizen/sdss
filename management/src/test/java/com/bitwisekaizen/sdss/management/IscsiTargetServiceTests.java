@@ -1,7 +1,8 @@
 package com.bitwisekaizen.sdss.management;
 
+import com.bitwisekaizen.sdss.agentclient.AccessibleIscsiTarget;
 import com.bitwisekaizen.sdss.agentclient.IscsiTarget;
-import com.bitwisekaizen.sdss.management.agent.StorageAgentClient;
+import com.bitwisekaizen.sdss.agentclient.StorageAgentClient;
 import com.bitwisekaizen.sdss.management.dto.UniqueIscsiTarget;
 import com.bitwisekaizen.sdss.management.entity.UniqueIscsiTargetEntity;
 import com.bitwisekaizen.sdss.management.repository.UniqueIscsiTargetRepository;
@@ -22,16 +23,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import static com.bitwisekaizen.sdss.agentclient.AccessibleIscsiTargetBuilder.anAccessibleIscsiTarget;
 import static com.bitwisekaizen.sdss.agentclient.IscsiTargetBuilder.anIscsiTarget;
 import static com.bitwisekaizen.sdss.management.entity.UniqueIscsiTargetEntityBuilder.aUniqueIscsiTargetEntity;
 import static com.bitwisekaizen.sdss.management.entity.UniqueIscsiTargetEntityBuilder.aUniqueIscsiTargetEntityFrom;
+import static com.bitwisekaizen.sdss.management.util.ReflectionMatcherUtil.reflectionMatching;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @Test
 public class IscsiTargetServiceTests {
@@ -52,15 +53,17 @@ public class IscsiTargetServiceTests {
     @BeforeMethod
     public void beforeMethod() {
         MockitoAnnotations.initMocks(this);
-
-        when(storageAgentClient.getStorageHost()).thenReturn(STORAGE_HOST);
     }
 
     @Test
     public void canCreateIscsiTarget() {
-        IscsiTarget iscsiTarget = anIscsiTarget().build();
+        AccessibleIscsiTarget accessibleIscsiTarget = anAccessibleIscsiTarget()
+                .withStorageNetworkAddress(STORAGE_HOST).build();
+        IscsiTarget iscsiTarget = accessibleIscsiTarget.getIscsiTarget();
         when(uniqueIscsiTargetRepository.save(any(UniqueIscsiTargetEntity.class))).thenReturn(
                 aUniqueIscsiTargetEntityFrom(iscsiTarget).withStorageHost(STORAGE_HOST).build());
+
+        when(storageAgentClient.createIscsiTarget(iscsiTarget)).thenReturn(accessibleIscsiTarget);
 
         UniqueIscsiTarget uniqueIscsiTarget = iscsiTargetService.createUniqueIscsiTarget(iscsiTarget);
 
@@ -68,7 +71,7 @@ public class IscsiTargetServiceTests {
         verify(uniqueIscsiTargetRepository).save(argThat(entityThatMatches(iscsiTarget)));
         verify(storageAgentClient).createIscsiTarget(iscsiTarget);
         assertThat(uniqueIscsiTarget, notNullValue());
-        assertThat(uniqueIscsiTarget.getIscsiTarget(), equalTo(iscsiTarget));
+        assertThat(uniqueIscsiTarget.getIscsiTarget(), reflectionMatching(iscsiTarget));
         assertThat(uniqueIscsiTarget.getUuid(), notNullValue());
         assertThat(uniqueIscsiTarget.getStorageIpAddress(), equalTo(STORAGE_HOST));
     }
@@ -151,7 +154,8 @@ public class IscsiTargetServiceTests {
 
     private TypeSafeMatcher<UniqueIscsiTargetEntity> entityThatMatches(final IscsiTarget iscsiTarget) {
         return new TypeSafeMatcher<UniqueIscsiTargetEntity>() {
-            @Override protected boolean matchesSafely(UniqueIscsiTargetEntity uniqueIscsiTargetEntity) {
+            @Override
+            protected boolean matchesSafely(UniqueIscsiTargetEntity uniqueIscsiTargetEntity) {
                 if (iscsiTarget.getCapacityInMb() != uniqueIscsiTargetEntity.getCapacityInMb()) {
                     return false;
                 }
@@ -166,14 +170,16 @@ public class IscsiTargetServiceTests {
                 return true;
             }
 
-            @Override public void describeTo(Description description) {
+            @Override
+            public void describeTo(Description description) {
             }
         };
     }
 
     private TypeSafeMatcher<UniqueIscsiTarget> entityThatMatches(final UniqueIscsiTargetEntity uniqueIscsiTargetEntity) {
         return new TypeSafeMatcher<UniqueIscsiTarget>() {
-            @Override protected boolean matchesSafely(UniqueIscsiTarget uniqueIscsiTarget) {
+            @Override
+            protected boolean matchesSafely(UniqueIscsiTarget uniqueIscsiTarget) {
                 if (uniqueIscsiTarget.getIscsiTarget().getCapacityInMb() != uniqueIscsiTargetEntity.getCapacityInMb()) {
                     return false;
                 }
@@ -188,7 +194,8 @@ public class IscsiTargetServiceTests {
                 return true;
             }
 
-            @Override public void describeTo(Description description) {
+            @Override
+            public void describeTo(Description description) {
             }
         };
     }

@@ -1,7 +1,8 @@
 package com.bitwisekaizen.sdss.management.service;
 
+import com.bitwisekaizen.sdss.agentclient.AccessibleIscsiTarget;
 import com.bitwisekaizen.sdss.agentclient.IscsiTarget;
-import com.bitwisekaizen.sdss.management.agent.StorageAgentClient;
+import com.bitwisekaizen.sdss.agentclient.StorageAgentClient;
 import com.bitwisekaizen.sdss.management.dto.UniqueIscsiTarget;
 import com.bitwisekaizen.sdss.management.entity.InitiatorIqnEntity;
 import com.bitwisekaizen.sdss.management.entity.UniqueIscsiTargetEntity;
@@ -46,9 +47,10 @@ public class IscsiTargetService {
             throw new DuplicateTargetNameException(iscsiTarget.getTargetName());
         }
 
+        AccessibleIscsiTarget accessibleIscsiTarget = storageAgentClient.createIscsiTarget(iscsiTarget);
+
         UniqueIscsiTargetEntity uniqueIscsiTargetEntity =
-                uniqueIscsiTargetRepository.save(convertToIscsiTargetEntity(iscsiTarget, storageAgentClient));
-        storageAgentClient.createIscsiTarget(iscsiTarget);
+                uniqueIscsiTargetRepository.save(convertToUniqueIscsiTargetEntity(accessibleIscsiTarget));
 
         return convertToUniqueIscsiTarget(uniqueIscsiTargetEntity);
     }
@@ -98,16 +100,16 @@ public class IscsiTargetService {
         storageAgentClient.deleteIscsiTarget(uniqueIscsiTargetEntity.getUuid());
     }
 
-    private UniqueIscsiTargetEntity convertToIscsiTargetEntity(IscsiTarget iscsiTarget,
-                                                         StorageAgentClient storageAgentClient) {
+    private UniqueIscsiTargetEntity convertToUniqueIscsiTargetEntity(AccessibleIscsiTarget accessibleIscsiTarget) {
         List<InitiatorIqnEntity> initiatorIqnEntities = new ArrayList<>();
 
+        IscsiTarget iscsiTarget = accessibleIscsiTarget.getIscsiTarget();
         for (String iqn : iscsiTarget.getHostIscsiQualifiedNames()) {
             initiatorIqnEntities.add(new InitiatorIqnEntity(iqn));
         }
 
         return new UniqueIscsiTargetEntity(initiatorIqnEntities, iscsiTarget.getCapacityInMb(),
-                iscsiTarget.getTargetName(), storageAgentClient.getStorageHost());
+                iscsiTarget.getTargetName(), accessibleIscsiTarget.getStorageNetworkAddresses().get(0));
     }
 
     private UniqueIscsiTarget convertToUniqueIscsiTarget(UniqueIscsiTargetEntity uniqueIscsiTargetEntity) {
