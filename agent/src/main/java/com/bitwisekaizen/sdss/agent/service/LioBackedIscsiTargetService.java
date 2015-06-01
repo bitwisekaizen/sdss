@@ -29,6 +29,9 @@ public class LioBackedIscsiTargetService {
      */
     public void updateTargets(List<AccessibleIscsiTarget> iscsiTargets) {
         File nodeFile = nodeFileGenerator.generateFile(iscsiTargets);
-        chefSoloRunner.runUsingNodeFile(nodeFile);
+        ChefSoloRunnerResult chefSoloRunnerResult = chefSoloRunner.runUsingNodeFile(nodeFile);
+        if (!chefSoloRunnerResult.isSuccess()) {
+            throw new UnhandledException("Chef ran failure with message: " + chefSoloRunnerResult.getOutput());
+        }
     }
 }

@@ -40,7 +40,7 @@ public class IscsiChefNodeFileGenerator {
             writeOutMustacheScopesToFile(mustache, scopes, outputFile);
             return outputFile;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UnhandledException(e);
         }
     }
 
