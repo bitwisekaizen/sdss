@@ -1,7 +1,7 @@
 package com.bitwisekaizen.sdss.management.service;
 
+import com.bitwisekaizen.sdss.agentclient.IscsiTarget;
 import com.bitwisekaizen.sdss.management.agent.StorageAgentClient;
-import com.bitwisekaizen.sdss.management.dto.IscsiTarget;
 import com.bitwisekaizen.sdss.management.dto.UniqueIscsiTarget;
 import com.bitwisekaizen.sdss.management.entity.InitiatorIqnEntity;
 import com.bitwisekaizen.sdss.management.entity.UniqueIscsiTargetEntity;

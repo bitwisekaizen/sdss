@@ -1,8 +1,9 @@
 package com.bitwisekaizen.sdss.management.acceptance;
 
+import com.bitwisekaizen.sdss.agentclient.IscsiTarget;
 import com.bitwisekaizen.sdss.management.dto.UniqueIscsiTarget;
-import com.bitwisekaizen.sdss.management.dto.IscsiTarget;
 import com.bitwisekaizen.sdss.management.dto.UniqueIscsiTargetBuilder;
+import com.bitwisekaizen.sdss.management.util.ReflectionMatcherUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import static com.bitwisekaizen.sdss.management.dto.IscsiTargetBuilder.anIscsiTarget;
+import static com.bitwisekaizen.sdss.agentclient.IscsiTargetBuilder.anIscsiTarget;
+import static com.bitwisekaizen.sdss.management.util.ReflectionMatcherUtil.reflectionMatching;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.testng.Assert.fail;
@@ -41,7 +43,7 @@ public class IscsiTargetManagementTest extends AbstractAcceptanceTest {
 
         UniqueIscsiTarget uniqueIscsiTargetRetrieved = getUniqueIscsiTarget(targetCreated.getUuid());
         assertThat(uniqueIscsiTargetRetrieved, notNullValue());
-        assertThat(targetCreated.getIscsiTarget(), equalTo(targetToCreate));
+        assertThat(targetCreated.getIscsiTarget(), reflectionMatching(targetToCreate));
         assertThat(targetCreated.getUuid(), notNullValue());
         assertThat(targetCreated.getStorageIpAddress(), notNullValue());
     }
@@ -94,7 +96,7 @@ public class IscsiTargetManagementTest extends AbstractAcceptanceTest {
 
         List<UniqueIscsiTarget> uniqueIscsiTargets = getAllUniqueIscsiTargets();
         for (UniqueIscsiTarget uniqueIscsiTargetSpecCreated : uniqueIscsiTargetsCreated) {
-            assertThat(uniqueIscsiTargets, hasItem(uniqueIscsiTargetSpecCreated));
+            assertThat(uniqueIscsiTargets, hasItem(reflectionMatching(uniqueIscsiTargetSpecCreated)));
         }
     }
 

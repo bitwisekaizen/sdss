@@ -1,6 +1,6 @@
 package com.bitwisekaizen.sdss.management.entity;
 
-import com.bitwisekaizen.sdss.management.dto.IscsiTarget;
+import com.bitwisekaizen.sdss.agentclient.IscsiTarget;
 import org.apache.commons.lang3.builder.Builder;
 
 import java.util.ArrayList;

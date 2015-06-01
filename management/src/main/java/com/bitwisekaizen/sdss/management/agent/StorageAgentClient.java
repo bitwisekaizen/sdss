@@ -1,6 +1,6 @@
 package com.bitwisekaizen.sdss.management.agent;
 
-import com.bitwisekaizen.sdss.management.dto.IscsiTarget;
+import com.bitwisekaizen.sdss.agentclient.IscsiTarget;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

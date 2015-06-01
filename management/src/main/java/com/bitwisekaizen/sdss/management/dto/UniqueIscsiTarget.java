@@ -1,5 +1,6 @@
 package com.bitwisekaizen.sdss.management.dto;
 
+import com.bitwisekaizen.sdss.agentclient.IscsiTarget;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 

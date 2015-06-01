@@ -1,5 +1,7 @@
 package com.bitwisekaizen.sdss.management.dto;
 
+import com.bitwisekaizen.sdss.agentclient.IscsiTarget;
+import com.bitwisekaizen.sdss.agentclient.IscsiTargetBuilder;
 import com.google.common.net.InetAddresses;
 import org.apache.commons.lang3.builder.Builder;
 

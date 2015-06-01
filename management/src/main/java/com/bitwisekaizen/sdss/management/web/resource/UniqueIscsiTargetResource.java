@@ -1,7 +1,7 @@
 package com.bitwisekaizen.sdss.management.web.resource;
 
+import com.bitwisekaizen.sdss.agentclient.IscsiTarget;
 import com.bitwisekaizen.sdss.management.service.IscsiTargetNotFoundException;
-import com.bitwisekaizen.sdss.management.dto.IscsiTarget;
 import com.bitwisekaizen.sdss.management.dto.UniqueIscsiTarget;
 import com.bitwisekaizen.sdss.management.service.IscsiTargetService;
 import org.slf4j.Logger;
@@ -11,8 +11,6 @@ import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 

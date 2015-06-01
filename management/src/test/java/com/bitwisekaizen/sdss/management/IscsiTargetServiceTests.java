@@ -1,7 +1,7 @@
 package com.bitwisekaizen.sdss.management;
 
+import com.bitwisekaizen.sdss.agentclient.IscsiTarget;
 import com.bitwisekaizen.sdss.management.agent.StorageAgentClient;
-import com.bitwisekaizen.sdss.management.dto.IscsiTarget;
 import com.bitwisekaizen.sdss.management.dto.UniqueIscsiTarget;
 import com.bitwisekaizen.sdss.management.entity.UniqueIscsiTargetEntity;
 import com.bitwisekaizen.sdss.management.repository.UniqueIscsiTargetRepository;
@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import static com.bitwisekaizen.sdss.management.dto.IscsiTargetBuilder.anIscsiTarget;
+import static com.bitwisekaizen.sdss.agentclient.IscsiTargetBuilder.anIscsiTarget;
 import static com.bitwisekaizen.sdss.management.entity.UniqueIscsiTargetEntityBuilder.aUniqueIscsiTargetEntity;
 import static com.bitwisekaizen.sdss.management.entity.UniqueIscsiTargetEntityBuilder.aUniqueIscsiTargetEntityFrom;
 import static org.hamcrest.MatcherAssert.assertThat;
