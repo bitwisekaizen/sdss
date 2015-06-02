@@ -1,5 +1,7 @@
 package com.bitwisekaizen.sdss.agentclient;
 
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import java.util.List;
@@ -7,6 +9,7 @@ import java.util.List;
 /**
  * Spec that describes the ISCSI target
  */
+@ApiModel(description = "Spec that describes an ISCSI target")
 public class IscsiTarget {
 
     private List<String> hostIscsiQualifiedNames;
@@ -30,6 +33,7 @@ public class IscsiTarget {
      *
      * @return the LUN target capacity in MB.
      */
+    @ApiModelProperty(value = "LUN size in MM", required = true)
     public int getCapacityInMb() {
         return capacityInMb;
     }
@@ -39,6 +43,8 @@ public class IscsiTarget {
      *
      * @return the list of ISCSI qualified names of the hosts, permissible to access this target.
      */
+    @ApiModelProperty(value = "List of ISCSI qualified names (IQNs) of he host, permissible to " +
+            "access the target", required = true)
     public List<String> getHostIscsiQualifiedNames() {
         return hostIscsiQualifiedNames;
     }
@@ -48,6 +54,7 @@ public class IscsiTarget {
      *
      * @return target name.
      */
+    @ApiModelProperty(value = "Name of the target", required = true)
     public String getTargetName() {
         return targetName;
     }

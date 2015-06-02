@@ -1,6 +1,7 @@
 package com.bitwisekaizen.sdss.management.config;
 
 import com.bitwisekaizen.sdss.agentclient.StorageAgentClient;
+import com.wordnik.swagger.jaxrs.config.BeanConfig;
 import org.flywaydb.core.Flyway;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 import org.glassfish.jersey.client.ClientConfig;
@@ -102,8 +103,17 @@ public class ApplicationConfig {
 
     @Bean
     public ServletRegistrationBean servletRegistrationBean() {
+        // https://github.com/swagger-api/swagger-core/wiki/Swagger-Core-Jersey-2.X-Project-Setup-1.5
+        BeanConfig beanConfig = new BeanConfig();
+        beanConfig.setVersion("1.0.0");
+        beanConfig.setBasePath("/api/");
+        beanConfig.setResourcePackage("com.bitwisekaizen.sdss.management.web.resource");
+        beanConfig.setScan(true);
+
         ResourceConfig resourceConfig = new ResourceConfig();
         resourceConfig.packages("com.bitwisekaizen.sdss.management.web");
+        resourceConfig.register(com.wordnik.swagger.jaxrs.listing.ApiListingResource.class);
+        resourceConfig.register(com.wordnik.swagger.jaxrs.listing.SwaggerSerializers.class);
         resourceConfig.register(JacksonFeature.class);
         //resourceConfig.register(LoggingFilter.class);
         ServletContainer servletContainer = new org.glassfish.jersey.servlet.ServletContainer(resourceConfig);

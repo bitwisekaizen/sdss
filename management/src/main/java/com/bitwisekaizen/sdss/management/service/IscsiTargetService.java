@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,8 +40,11 @@ public class IscsiTargetService {
      *
      * @param iscsiTarget ISCSI target to create
      * @return the created ISCSI target.
+     * @throws DuplicateTargetNameException if name already exists
+     * @throws ConstraintViolationException if ISCSI target spec is invalid
      */
-    public UniqueIscsiTarget createUniqueIscsiTarget(IscsiTarget iscsiTarget) {
+    public UniqueIscsiTarget createUniqueIscsiTarget(IscsiTarget iscsiTarget) throws DuplicateTargetNameException,
+            ConstraintViolationException {
         dtoValidator.validate(iscsiTarget);
 
         if (uniqueIscsiTargetRepository.findByTargetName(iscsiTarget.getTargetName()) != null) {

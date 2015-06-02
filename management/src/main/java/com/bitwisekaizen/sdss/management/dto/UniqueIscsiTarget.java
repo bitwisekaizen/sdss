@@ -1,12 +1,15 @@
 package com.bitwisekaizen.sdss.management.dto;
 
 import com.bitwisekaizen.sdss.agentclient.IscsiTarget;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * Unique ISCSI target currently managed by the SDSS.
  */
+@ApiModel(description = "Unique network-accessible ISCSI target managed by the SDSS")
 public class UniqueIscsiTarget {
 
     private String uuid;
@@ -29,6 +32,7 @@ public class UniqueIscsiTarget {
      *
      * @return UUID of the ISCSI target.
      */
+    @ApiModelProperty(value = "ISCSI target unique UUID", required = true)
     public String getUuid() {
         return uuid;
     }
@@ -38,6 +42,7 @@ public class UniqueIscsiTarget {
      *
      * @return the storage server IP that the target is located in.
      */
+    @ApiModelProperty(value = "IP address that the ISCSI target can be accessed with", required = true)
     public String getStorageIpAddress() {
         return storageIpAddress;
     }
@@ -47,6 +52,7 @@ public class UniqueIscsiTarget {
      *
      * @return ISCSI target spec.
      */
+    @ApiModelProperty(value = "ISCSI target spec", required = true)
     public IscsiTarget getIscsiTarget() {
         return iscsiTarget;
     }
