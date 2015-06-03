@@ -5,7 +5,7 @@
         {{#decoratedIscsiTargets}}
            {
               "name":"{{value.iscsiTarget.targetName}}",
-              "size":"{{value.iscsiTarget.capacityInMb}}",
+              "size":"{{value.iscsiTarget.capacityInMb}}MB",
               "mapped_iqns":[
               {{#value.iscsiTarget.hostIscsiQualifiedNames}}
                  "{{value}}"{{^last}},{{/last}}
