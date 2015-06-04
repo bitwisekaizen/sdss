@@ -20,6 +20,7 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
 
     @Override
     public Response toResponse(ConstraintViolationException exception) {
+        logger.error(this.getClass().getSimpleName(), exception);
         return Response.status(HttpStatus.SC_BAD_REQUEST).entity(exception.getConstraintViolations().toString())
                 .type("text/plain").build();
     }

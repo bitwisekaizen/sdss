@@ -137,7 +137,7 @@ public class IscsiTargetServiceTests {
         iscsiTargetService.deleteIscsiUniqueTarget(uniqueIscsiTargetEntity.getUuid());
 
         verify(uniqueIscsiTargetRepository).delete(uniqueIscsiTargetEntity.getUuid());
-        verify(storageAgentClient).deleteIscsiTarget(uniqueIscsiTargetEntity.getUuid());
+        verify(storageAgentClient).deleteIscsiTarget(uniqueIscsiTargetEntity.getTargetName());
     }
 
     @Test

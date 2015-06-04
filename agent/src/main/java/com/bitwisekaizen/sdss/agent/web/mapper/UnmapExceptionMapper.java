@@ -16,7 +16,7 @@ public class UnmapExceptionMapper implements ExceptionMapper<Exception> {
 
     @Override
     public Response toResponse(Exception exception) {
-        logger.error("Unmapped exception", exception);
+        logger.error(this.getClass().getSimpleName(), exception);
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                 exception.getMessage()).type("text/plain").build();
     }

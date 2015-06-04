@@ -8,6 +8,8 @@ import com.bitwisekaizen.sdss.management.entity.InitiatorIqnEntity;
 import com.bitwisekaizen.sdss.management.entity.UniqueIscsiTargetEntity;
 import com.bitwisekaizen.sdss.management.repository.UniqueIscsiTargetRepository;
 import com.bitwisekaizen.sdss.management.validation.DtoValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,7 @@ import java.util.List;
 @Service
 @Transactional
 public class IscsiTargetService {
+    final static Logger logger = LoggerFactory.getLogger(IscsiTargetService.class);
 
     private UniqueIscsiTargetRepository uniqueIscsiTargetRepository;
     private StorageAgentClient storageAgentClient;
@@ -45,6 +48,7 @@ public class IscsiTargetService {
      */
     public UniqueIscsiTarget createUniqueIscsiTarget(IscsiTarget iscsiTarget) throws DuplicateTargetNameException,
             ConstraintViolationException {
+        logger.info("Creating unique iscsi target named: " + iscsiTarget.getTargetName());
         dtoValidator.validate(iscsiTarget);
 
         if (uniqueIscsiTargetRepository.findByTargetName(iscsiTarget.getTargetName()) != null) {
@@ -101,7 +105,7 @@ public class IscsiTargetService {
         }
 
         uniqueIscsiTargetRepository.delete(uniqueIscsiTargetEntity.getUuid());
-        storageAgentClient.deleteIscsiTarget(uniqueIscsiTargetEntity.getUuid());
+        storageAgentClient.deleteIscsiTarget(uniqueIscsiTargetEntity.getTargetName());
     }
 
     private UniqueIscsiTargetEntity convertToUniqueIscsiTargetEntity(AccessibleIscsiTarget accessibleIscsiTarget) {

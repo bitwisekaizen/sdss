@@ -23,7 +23,8 @@ public class ChefSoloRunnerTest {
 
     @BeforeMethod
     private void setupMethod() throws Exception {
-        chefSoloRunner = new ChefSoloRunner("cat", "%s", "someurl");
+        String NO_SUDO = null;
+        chefSoloRunner = new ChefSoloRunner(false, "cat", "%s", "someurl");
 
         nodeFile = File.createTempFile("node", "file");
         FileUtils.write(nodeFile, nodeFileContent);

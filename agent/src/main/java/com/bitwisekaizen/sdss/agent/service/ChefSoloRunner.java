@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Instance can run a chef-solo command given the specified node file.
@@ -16,15 +18,18 @@ import java.io.IOException;
 @Component
 public class ChefSoloRunner {
     private static final Logger LOGGER = LoggerFactory.getLogger(ChefSoloRunner.class);
+    private boolean useSudo;
     private String chefExecutable;
     private String defaultArgs;
     private String chefSoloTarArchiveUrl;
-    private final File emptyConfig;
+    private File emptyConfig;
 
     @Autowired
-    public ChefSoloRunner(@Value("${app.chef.executable}") String chefExecutable,
-                          @Value("${app.chef.default.args}") String defaultArgs,
-                          @Value("${app.chef.tar.archive.url}") String chefSoloTarArchiveUrl) {
+    public ChefSoloRunner(@Value("${app.chef.executable.use.sudo}") boolean useSudo,
+            @Value("${app.chef.executable}") String chefExecutable,
+            @Value("${app.chef.default.args}") String defaultArgs,
+            @Value("${app.chef.tar.archive.url}") String chefSoloTarArchiveUrl) {
+        this.useSudo = useSudo;
         this.chefExecutable = chefExecutable;
         this.defaultArgs = defaultArgs;
         this.chefSoloTarArchiveUrl = chefSoloTarArchiveUrl;
@@ -42,7 +47,7 @@ public class ChefSoloRunner {
      *
      * @param nodeFile node file to use.
      */
-    public ChefSoloRunnerResult runUsingNodeFile(File nodeFile) {
+    public synchronized ChefSoloRunnerResult runUsingNodeFile(File nodeFile) {
         return runUsingChefArguments(String.format(defaultArgs,
                 nodeFile.getAbsolutePath(), emptyConfig.getAbsolutePath(), chefSoloTarArchiveUrl));
     }
@@ -51,12 +56,25 @@ public class ChefSoloRunner {
      * Run chef solo using the specified arguments
      * An example is: -c ~/solo.rb -j ~/node.json -r http://www.example.com/chef-solo.tar.gz
      *
-     * @param arguments chef executable arguments.
+     * @param argumentsString chef executable arguments.
      * @return return the chef solo run result.
      */
-    private ChefSoloRunnerResult runUsingChefArguments(String arguments) {
-        ProcessBuilder processBuilder = new ProcessBuilder(chefExecutable, arguments);
-        LOGGER.info("Running chef command: " + chefExecutable + " " + arguments);
+    private ChefSoloRunnerResult runUsingChefArguments(String argumentsString) {
+        List<String> arguments = new ArrayList<>();
+        ProcessBuilder processBuilder;
+        if (useSudo) {
+            arguments.add("sudo");
+        }
+
+        arguments.add(chefExecutable);
+        for (String argument : argumentsString.split(" ")) {
+            arguments.add(argument);
+        }
+
+        processBuilder = new ProcessBuilder(arguments);
+
+        LOGGER.info("Running chef command: " + arguments);
+
         processBuilder.directory(new File(System.getProperty("user.home")));
         try {
             File output = File.createTempFile("chef-solo-runner-output", ".txt");
