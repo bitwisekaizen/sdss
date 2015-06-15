@@ -1,4 +1,4 @@
-package com.bitwisekaizen.sdss.management;
+package com.bitwisekaizen.sdss.management.service;
 
 import com.bitwisekaizen.sdss.agentclient.AccessibleIscsiTarget;
 import com.bitwisekaizen.sdss.agentclient.IscsiTarget;
