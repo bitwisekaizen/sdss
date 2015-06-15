@@ -1,21 +1,27 @@
 package com.bitwisekaizen.sdss.management.config;
 
+import com.bitwisekaizen.sdss.agentclient.StorageAgentClient;
+import com.bitwisekaizen.sdss.management.service.InMemoryStorageAgentFactory;
+import com.bitwisekaizen.sdss.management.service.StorageAgentClientFactory;
+import com.bitwisekaizen.sdss.management.service.StorageAgentFactory;
 import com.wordnik.swagger.jaxrs.config.BeanConfig;
 import org.flywaydb.core.Flyway;
+import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
+import org.glassfish.jersey.client.RequestEntityProcessing;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.h2.Driver;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.*;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
@@ -25,7 +31,12 @@ import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
 import javax.sql.DataSource;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
 import java.util.Properties;
+
+import static java.util.concurrent.TimeUnit.MINUTES;
 
 @EnableAutoConfiguration
 @Configuration
@@ -112,4 +123,14 @@ public class ApplicationConfig {
         return new ServletRegistrationBean(servletContainer, "/api/*");
     }
 
+    @Bean
+    public StorageAgentFactory createStorageAgentFactory(
+            @Value("${app.running.integration.test}") boolean runningIntegrationTest,
+            @Value("${app.consul.host}") String consulHost) {
+        if (runningIntegrationTest) {
+            return new InMemoryStorageAgentFactory();
+        } else {
+            return new StorageAgentFactory(consulHost);
+        }
+    }
 }

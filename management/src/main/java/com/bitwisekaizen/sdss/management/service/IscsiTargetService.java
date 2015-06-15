@@ -56,6 +56,7 @@ public class IscsiTargetService {
         }
 
         StorageAgentClient storageAgentClient = storageAgentClientFactory.getBestStorageAgent(iscsiTarget);
+        logger.info("Storage agent selected: " + storageAgentClient.getStorageAgentUrl());
         AccessibleIscsiTarget accessibleIscsiTarget = storageAgentClient.createIscsiTarget(iscsiTarget);
 
         UniqueIscsiTargetEntity uniqueIscsiTargetEntity =
