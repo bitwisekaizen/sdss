@@ -20,6 +20,13 @@
         <module>agent-client</module>
     </modules>
 
+    <repositories>
+        <repository>
+            <id>spring-milestones</id>
+            <url>http://repo.spring.io/libs-milestone/</url>
+        </repository>
+    </repositories>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -123,6 +130,12 @@
                 <groupId>com.wordnik</groupId>
                 <artifactId>swagger-annotations</artifactId>
                 <version>1.5.1-M1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.orbitz.consul</groupId>
+                <artifactId>consul-client</artifactId>
+                <version>0.9.4</version>
             </dependency>
 
             <dependency>
