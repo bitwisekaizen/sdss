@@ -9,11 +9,13 @@ import com.bitwisekaizen.sdss.management.repository.UniqueIscsiTargetRepository;
 import com.bitwisekaizen.sdss.management.service.DuplicateTargetNameException;
 import com.bitwisekaizen.sdss.management.service.IscsiTargetNotFoundException;
 import com.bitwisekaizen.sdss.management.service.IscsiTargetService;
+import com.bitwisekaizen.sdss.management.service.StorageAgentClientFactory;
 import com.bitwisekaizen.sdss.management.validation.DtoValidator;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -42,17 +44,19 @@ public class IscsiTargetServiceTests {
     private UniqueIscsiTargetRepository uniqueIscsiTargetRepository;
 
     @Mock
-    private StorageAgentClient storageAgentClient;
+    private StorageAgentClientFactory storageAgentClientFactory;
 
     @Mock
     private DtoValidator dtoValidator;
 
-    @InjectMocks
     private IscsiTargetService iscsiTargetService;
 
     @BeforeMethod
     public void beforeMethod() {
         MockitoAnnotations.initMocks(this);
+
+        iscsiTargetService = new IscsiTargetService(uniqueIscsiTargetRepository,
+                storageAgentClientFactory, dtoValidator);
     }
 
     @Test
@@ -60,9 +64,11 @@ public class IscsiTargetServiceTests {
         AccessibleIscsiTarget accessibleIscsiTarget = anAccessibleIscsiTarget()
                 .withStorageNetworkAddress(STORAGE_HOST).build();
         IscsiTarget iscsiTarget = accessibleIscsiTarget.getIscsiTarget();
+        StorageAgentClient storageAgentClient = mock(StorageAgentClient.class);
         when(uniqueIscsiTargetRepository.save(any(UniqueIscsiTargetEntity.class))).thenReturn(
                 aUniqueIscsiTargetEntityFrom(iscsiTarget).withStorageHost(STORAGE_HOST).build());
 
+        when(storageAgentClientFactory.getBestStorageAgent(iscsiTarget)).thenReturn(storageAgentClient);
         when(storageAgentClient.createIscsiTarget(iscsiTarget)).thenReturn(accessibleIscsiTarget);
 
         UniqueIscsiTarget uniqueIscsiTarget = iscsiTargetService.createUniqueIscsiTarget(iscsiTarget);
@@ -88,7 +94,7 @@ public class IscsiTargetServiceTests {
         }
 
         verify(uniqueIscsiTargetRepository, never()).save(any(UniqueIscsiTargetEntity.class));
-        verify(storageAgentClient, never()).createIscsiTarget(any(IscsiTarget.class));
+        verify(storageAgentClientFactory, never()).getBestStorageAgent(any(IscsiTarget.class));
     }
 
     @Test
@@ -132,7 +138,9 @@ public class IscsiTargetServiceTests {
     @Test
     public void canDeleteIscsiTarget() {
         UniqueIscsiTargetEntity uniqueIscsiTargetEntity = aUniqueIscsiTargetEntity().build();
+        StorageAgentClient storageAgentClient = mock(StorageAgentClient.class);
         when(uniqueIscsiTargetRepository.findByUuid(uniqueIscsiTargetEntity.getUuid())).thenReturn(uniqueIscsiTargetEntity);
+        when(storageAgentClientFactory.getStorageClientUsedInCreating(uniqueIscsiTargetEntity)).thenReturn(storageAgentClient);
 
         iscsiTargetService.deleteIscsiUniqueTarget(uniqueIscsiTargetEntity.getUuid());
 

@@ -32,6 +32,9 @@ public class UniqueIscsiTargetEntity {
     @Column(name = "target_name")
     private String targetName;
 
+    @Column(name = "storage_agent_url")
+    private String storageAgentUrl;
+
     @Column(name = "storage_host")
     private String storageHost;
 
@@ -39,11 +42,12 @@ public class UniqueIscsiTargetEntity {
     }
 
     public UniqueIscsiTargetEntity(List<InitiatorIqnEntity> initiatorIqnEntities, int capacityInMb, String targetName,
-                                   String storageHost) {
+                                   String storageAgentUrl, String storageHost) {
         this();
         this.initiatorIqnEntities = initiatorIqnEntities;
         this.capacityInMb = capacityInMb;
         this.targetName = targetName;
+        this.storageAgentUrl = storageAgentUrl;
         this.storageHost = storageHost;
     }
 
@@ -84,9 +88,18 @@ public class UniqueIscsiTargetEntity {
     }
 
     /**
-     * Host/IP location on which this target exists.
+     * URL to the storage agent management
      *
-     * @return Host/IP location on which this target exists.
+     * @return URL to the storage agent management
+     */
+    public String getStorageAgentUrl() {
+        return storageAgentUrl;
+    }
+
+    /**
+     * IP location on which this target server exists.
+     *
+     * @return IP location on which this target server exists.
      */
     public String getStorageHost() {
         return storageHost;
@@ -109,4 +122,5 @@ public class UniqueIscsiTargetEntity {
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
     }
+
 }

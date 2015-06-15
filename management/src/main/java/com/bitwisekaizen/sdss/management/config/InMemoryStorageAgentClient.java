@@ -5,10 +5,7 @@ import com.bitwisekaizen.sdss.agentclient.IscsiTarget;
 import com.bitwisekaizen.sdss.agentclient.StorageAgentClient;
 
 import javax.ws.rs.client.WebTarget;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Stubbed out StorageAgentClient that stores the targets in memory rather than contacting the actual agent.  This is
@@ -24,7 +21,7 @@ public class InMemoryStorageAgentClient extends StorageAgentClient {
     }
 
     @Override
-    public AccessibleIscsiTarget createIscsiTarget(IscsiTarget iscsiTarget) {
+    public synchronized AccessibleIscsiTarget createIscsiTarget(IscsiTarget iscsiTarget) {
         AccessibleIscsiTarget accessibleIscsiTarget = new AccessibleIscsiTarget(iscsiTarget, storageNetworkAddress);
         targets.add(accessibleIscsiTarget);
 
@@ -32,7 +29,7 @@ public class InMemoryStorageAgentClient extends StorageAgentClient {
     }
 
     @Override
-    public void deleteIscsiTarget(String targetName) {
+    public synchronized void deleteIscsiTarget(String targetName) {
         Iterator<AccessibleIscsiTarget> iterator = targets.iterator();
         while (iterator.hasNext()) {
             AccessibleIscsiTarget accessibleIscsiTarget = iterator.next();
@@ -44,7 +41,7 @@ public class InMemoryStorageAgentClient extends StorageAgentClient {
     }
 
     @Override
-    public List<AccessibleIscsiTarget> getAllIscsiTargets() {
-        return targets;
+    public synchronized List<AccessibleIscsiTarget> getAllIscsiTargets() {
+        return Collections.unmodifiableList(targets);
     }
 }

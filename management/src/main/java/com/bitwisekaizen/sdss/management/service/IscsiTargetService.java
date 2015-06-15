@@ -27,14 +27,14 @@ public class IscsiTargetService {
     final static Logger logger = LoggerFactory.getLogger(IscsiTargetService.class);
 
     private UniqueIscsiTargetRepository uniqueIscsiTargetRepository;
-    private StorageAgentClient storageAgentClient;
+    private StorageAgentClientFactory storageAgentClientFactory;
     private DtoValidator dtoValidator;
 
     @Autowired
     public IscsiTargetService(UniqueIscsiTargetRepository uniqueIscsiTargetRepository,
-                              StorageAgentClient storageAgentClient, DtoValidator dtoValidator) {
+                              StorageAgentClientFactory storageAgentClientFactory, DtoValidator dtoValidator) {
         this.uniqueIscsiTargetRepository = uniqueIscsiTargetRepository;
-        this.storageAgentClient = storageAgentClient;
+        this.storageAgentClientFactory = storageAgentClientFactory;
         this.dtoValidator = dtoValidator;
     }
 
@@ -55,10 +55,12 @@ public class IscsiTargetService {
             throw new DuplicateTargetNameException(iscsiTarget.getTargetName());
         }
 
+        StorageAgentClient storageAgentClient = storageAgentClientFactory.getBestStorageAgent(iscsiTarget);
         AccessibleIscsiTarget accessibleIscsiTarget = storageAgentClient.createIscsiTarget(iscsiTarget);
 
         UniqueIscsiTargetEntity uniqueIscsiTargetEntity =
-                uniqueIscsiTargetRepository.save(convertToUniqueIscsiTargetEntity(accessibleIscsiTarget));
+                uniqueIscsiTargetRepository.save(
+                        convertToUniqueIscsiTargetEntity(accessibleIscsiTarget, storageAgentClient));
 
         return convertToUniqueIscsiTarget(uniqueIscsiTargetEntity);
     }
@@ -105,10 +107,15 @@ public class IscsiTargetService {
         }
 
         uniqueIscsiTargetRepository.delete(uniqueIscsiTargetEntity.getUuid());
+
+        StorageAgentClient storageAgentClient =
+                storageAgentClientFactory.getStorageClientUsedInCreating(uniqueIscsiTargetEntity);
+
         storageAgentClient.deleteIscsiTarget(uniqueIscsiTargetEntity.getTargetName());
     }
 
-    private UniqueIscsiTargetEntity convertToUniqueIscsiTargetEntity(AccessibleIscsiTarget accessibleIscsiTarget) {
+    private UniqueIscsiTargetEntity convertToUniqueIscsiTargetEntity(AccessibleIscsiTarget accessibleIscsiTarget,
+                                                                     StorageAgentClient storageAgentClient) {
         List<InitiatorIqnEntity> initiatorIqnEntities = new ArrayList<>();
 
         IscsiTarget iscsiTarget = accessibleIscsiTarget.getIscsiTarget();
@@ -117,7 +124,8 @@ public class IscsiTargetService {
         }
 
         return new UniqueIscsiTargetEntity(initiatorIqnEntities, iscsiTarget.getCapacityInMb(),
-                iscsiTarget.getTargetName(), accessibleIscsiTarget.getStorageNetworkAddresses().get(0));
+                iscsiTarget.getTargetName(), storageAgentClient.getStorageAgentUrl(),
+                accessibleIscsiTarget.getStorageNetworkAddresses().get(0));
     }
 
     private UniqueIscsiTarget convertToUniqueIscsiTarget(UniqueIscsiTargetEntity uniqueIscsiTargetEntity) {

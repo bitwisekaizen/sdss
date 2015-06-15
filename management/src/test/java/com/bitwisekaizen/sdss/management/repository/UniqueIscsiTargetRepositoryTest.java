@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -28,6 +29,7 @@ public class UniqueIscsiTargetRepositoryTest extends AbstractTestNGSpringContext
     private InitiatorIqnEntityRepository initiatorIqnEntityRepository;
 
     @BeforeMethod
+    @AfterMethod
     public void beforeMethod() {
         uniqueIscsiTargetRepository.deleteAll();
     }

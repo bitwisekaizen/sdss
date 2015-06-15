@@ -45,4 +45,8 @@ public class StorageAgentClient {
         return webTarget.path("api").path("accessibleiscsitargets").request().get(
                 new GenericType<List<AccessibleIscsiTarget>>() {});
     }
+
+    public String getStorageAgentUrl() {
+        return webTarget.getUri().toASCIIString();
+    }
 }
