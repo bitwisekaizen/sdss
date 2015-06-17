@@ -6,15 +6,16 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.h2.Driver;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.health.DiskSpaceHealthIndicator;
+import org.springframework.boot.actuate.health.DiskSpaceHealthIndicatorProperties;
+import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.*;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
@@ -22,6 +23,7 @@ import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.sql.DataSource;
 import java.util.Properties;
@@ -31,7 +33,8 @@ import java.util.Properties;
 @ComponentScan(basePackages = "com.bitwisekaizen.sdss.agent")
 @EnableConfigurationProperties({AppServerProperties.class, PersistenceProperties.class})
 @EnableJpaRepositories(basePackages = "com.bitwisekaizen.sdss.agent.repository")
-
+@EnableScheduling
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class ApplicationConfig {
 
     @Autowired

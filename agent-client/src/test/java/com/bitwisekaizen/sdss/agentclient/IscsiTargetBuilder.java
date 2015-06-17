@@ -12,7 +12,7 @@ public class IscsiTargetBuilder implements Builder<IscsiTarget> {
     private static final Random random = new Random();
 
     private List<String> hostIscsiQualifiedNames = new ArrayList<>();
-    private int capacityInMb = ThreadLocalRandom.current().nextInt(100, 2000);
+    private int capacityInMb = ThreadLocalRandom.current().nextInt(10000, 20000);
     private String targetName = UUID.randomUUID().toString();
 
     public static IscsiTargetBuilder anIscsiTarget() {

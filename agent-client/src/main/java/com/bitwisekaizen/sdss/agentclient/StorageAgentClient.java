@@ -46,6 +46,15 @@ public class StorageAgentClient {
                 new GenericType<List<AccessibleIscsiTarget>>() {});
     }
 
+    /**
+     * Get the agent's health check
+     *
+     * @return agent's healthy check.
+     */
+    public HealthCheck getHealthCheck() {
+        return webTarget.path("health").request().get(HealthCheck.class);
+    }
+
     public String getStorageAgentUrl() {
         return webTarget.getUri().toASCIIString();
     }
