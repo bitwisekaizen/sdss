@@ -1,6 +1,7 @@
 package com.bitwisekaizen.sdss.management.acceptance;
 
 import com.bitwisekaizen.sdss.agentclient.IscsiTarget;
+import com.bitwisekaizen.sdss.management.dto.AgentNodeAffinity;
 import com.bitwisekaizen.sdss.management.dto.UniqueIscsiTarget;
 import com.bitwisekaizen.sdss.management.dto.UniqueIscsiTargetBuilder;
 import com.bitwisekaizen.sdss.management.util.ReflectionMatcherUtil;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import static com.bitwisekaizen.sdss.agentclient.IscsiTargetBuilder.anIscsiTarget;
+import static com.bitwisekaizen.sdss.management.dto.AgentNodeAffinityBuilder.anAgentNodeAffinity;
 import static com.bitwisekaizen.sdss.management.util.ReflectionMatcherUtil.reflectionMatching;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -31,8 +33,14 @@ import static org.testng.Assert.fail;
 public class IscsiTargetManagementTest extends AbstractAcceptanceTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(IscsiTargetManagementTest.class);
 
-    @AfterMethod
+    private AgentNodeAffinity affinityCreated;
+
     @BeforeMethod
+    public void beforeMethod() {
+        afterMethod();
+    }
+
+    @AfterMethod(alwaysRun = true)
     public void afterMethod() {
         deleteAllUniqueIscsiTargets();
     }

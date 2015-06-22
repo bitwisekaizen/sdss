@@ -2,6 +2,7 @@ package com.bitwisekaizen.sdss.management.dto;
 
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
+import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * Affinity that determines which storage agent node are preferred for a key.
@@ -9,17 +10,19 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
 @ApiModel(description = "Affinity that determines which storage agent node are preferred for a key.")
 public class AgentNodeAffinity {
 
+    @NotBlank(message = "affinity.key.empty")
     private String affinityKey;
 
-    private String storageAgentNode;
+    @NotBlank(message = "agent.node.value.empty")
+    private String agentNode;
 
     // Json serialization
     private AgentNodeAffinity() {
     }
 
-    public AgentNodeAffinity(String affinityKey, String storageAgentNode) {
+    public AgentNodeAffinity(String affinityKey, String agentNode) {
         this.affinityKey = affinityKey;
-        this.storageAgentNode = storageAgentNode;
+        this.agentNode = agentNode;
     }
 
     /**
@@ -38,16 +41,16 @@ public class AgentNodeAffinity {
      * @return the storage agent node.
      */
     @ApiModelProperty(value = "The storage node agent that the affinity key should be mapped to.", required = true)
-    public String getStorageAgentNode() {
-        return storageAgentNode;
+    public String getAgentNode() {
+        return agentNode;
     }
 
     /**
      * Update the specified storage agent.
      *
-     * @param storageAgentNode node to update.
+     * @param agentNode node to update.
      */
-    public void setStorageAgentNode(String storageAgentNode) {
-        this.storageAgentNode = storageAgentNode;
+    public void setAgentNode(String agentNode) {
+        this.agentNode = agentNode;
     }
 }
