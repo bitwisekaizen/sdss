@@ -1,5 +1,6 @@
 package com.bitwisekaizen.sdss.management.acceptance;
 
+import com.bitwisekaizen.sdss.management.acceptance.operations.AgentNodeAffinityOperations;
 import com.bitwisekaizen.sdss.management.config.ApplicationConfig;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 import org.glassfish.jersey.client.ClientConfig;
@@ -43,9 +44,12 @@ public class AbstractAcceptanceTest extends AbstractTestNGSpringContextTests {
 
     protected WebTarget webTarget;
 
+    protected AgentNodeAffinityOperations affinityOperations;
+
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         webTarget = createClient();
+        affinityOperations = new AgentNodeAffinityOperations(webTarget);
     }
 
     protected WebTarget createClient() {
