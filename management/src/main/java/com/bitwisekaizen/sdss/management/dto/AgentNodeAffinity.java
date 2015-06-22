@@ -11,15 +11,15 @@ public class AgentNodeAffinity {
 
     private String affinityKey;
 
-    private String storageAgentNode;
+    private String agentNode;
 
     // Json serialization
     private AgentNodeAffinity() {
     }
 
-    public AgentNodeAffinity(String affinityKey, String storageAgentNode) {
+    public AgentNodeAffinity(String affinityKey, String agentNode) {
         this.affinityKey = affinityKey;
-        this.storageAgentNode = storageAgentNode;
+        this.agentNode = agentNode;
     }
 
     /**
@@ -38,16 +38,16 @@ public class AgentNodeAffinity {
      * @return the storage agent node.
      */
     @ApiModelProperty(value = "The storage node agent that the affinity key should be mapped to.", required = true)
-    public String getStorageAgentNode() {
-        return storageAgentNode;
+    public String getAgentNode() {
+        return agentNode;
     }
 
     /**
      * Update the specified storage agent.
      *
-     * @param storageAgentNode node to update.
+     * @param agentNode node to update.
      */
-    public void setStorageAgentNode(String storageAgentNode) {
-        this.storageAgentNode = storageAgentNode;
+    public void setAgentNode(String agentNode) {
+        this.agentNode = agentNode;
     }
 }

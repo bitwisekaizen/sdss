@@ -43,8 +43,9 @@ public class AgentNodeAffinityTest extends AbstractAcceptanceTest {
 
     @Test
     public void canUpdateAffinity() {
-        AgentNodeAffinity affinityCreated = affinityOperations.createOrUpdateAgentNodeAffinity(anAgentNodeAffinity().build());
-        affinityCreated.setStorageAgentNode(UUID.randomUUID().toString());
+        AgentNodeAffinity affinityCreated =
+                affinityOperations.createOrUpdateAgentNodeAffinity(anAgentNodeAffinity().build());
+        affinityCreated.setAgentNode(UUID.randomUUID().toString());
 
         assertThat(affinityCreated, notNullValue());
         assertThat(affinityCreated, reflectionMatching(affinityCreated));
