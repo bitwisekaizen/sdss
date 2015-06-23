@@ -14,3 +14,9 @@ CREATE TABLE initiator_iqn (
     PRIMARY KEY (uuid),
     CONSTRAINT fk_unique_iscsi_target FOREIGN KEY(unique_iscsi_target_uuid) REFERENCES unique_iscsi_target(uuid)
 );
+
+CREATE TABLE agent_node_affinity (
+    affinity_key VARCHAR_IGNORECASE(64) NOT NULL,
+    agent_node VARCHAR(256) NOT NULL,
+    PRIMARY KEY (affinity_key)
+);

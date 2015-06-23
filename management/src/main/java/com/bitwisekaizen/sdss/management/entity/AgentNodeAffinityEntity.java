@@ -5,8 +5,8 @@ import javax.persistence.*;
 /**
  * Entity that represents an agent node affinity that stores mapping of a key to the preferred agent node.
  */
-//@Entity
-//@Table(name = "agent_node_affinity")
+@Entity
+@Table(name = "agent_node_affinity")
 public class AgentNodeAffinityEntity {
 
     @Id

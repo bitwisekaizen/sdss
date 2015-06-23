@@ -18,14 +18,14 @@ import java.util.List;
 /**
  * Service to manage agent node affinity.
  */
-//@Service
+@Service
 @Transactional
 public class AgentNodeAffinityService {
     final static Logger logger = LoggerFactory.getLogger(AgentNodeAffinityService.class);
     private AgentNodeAffinityRepository agentNodeAffinityRepository;
     private DtoValidator dtoValidator;
 
-    //@Autowired
+    @Autowired
     public AgentNodeAffinityService(AgentNodeAffinityRepository agentNodeAffinityRepository,
                                     DtoValidator dtoValidator) {
         this.agentNodeAffinityRepository = agentNodeAffinityRepository;
