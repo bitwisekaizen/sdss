@@ -17,7 +17,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.testng.Assert.fail;
 
-@Test(groups = "unimplemented")
+@Test
 public class AgentNodeAffinityTest extends AbstractAcceptanceTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(AgentNodeAffinityTest.class);
 
@@ -43,16 +43,17 @@ public class AgentNodeAffinityTest extends AbstractAcceptanceTest {
 
     @Test
     public void canUpdateAffinity() {
-        AgentNodeAffinity affinityCreated =
-                affinityOperations.createOrUpdateAgentNodeAffinity(anAgentNodeAffinity().build());
-        affinityCreated.setAgentNode(UUID.randomUUID().toString());
+        AgentNodeAffinity affinityToUpdate = affinityOperations.createOrUpdateAgentNodeAffinity(anAgentNodeAffinity().build());
+        affinityToUpdate.setAgentNode(UUID.randomUUID().toString());
 
-        assertThat(affinityCreated, notNullValue());
-        assertThat(affinityCreated, reflectionMatching(affinityCreated));
+        AgentNodeAffinity affinityUpdated = affinityOperations.createOrUpdateAgentNodeAffinity(affinityToUpdate);
+
+        assertThat(affinityUpdated, notNullValue());
+        assertThat(affinityUpdated, reflectionMatching(affinityToUpdate));
         AgentNodeAffinity affinityRetrieved =
-                affinityOperations.getAgentNodeAffinity(affinityCreated.getAffinityKey());
+                affinityOperations.getAgentNodeAffinity(affinityToUpdate.getAffinityKey());
         assertThat(affinityRetrieved, notNullValue());
-        assertThat(affinityRetrieved, reflectionMatching(affinityCreated));
+        assertThat(affinityRetrieved, reflectionMatching(affinityToUpdate));
     }
 
     @Test(expectedExceptions = BadRequestException.class)

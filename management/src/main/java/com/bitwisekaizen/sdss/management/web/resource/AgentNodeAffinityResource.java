@@ -2,9 +2,11 @@ package com.bitwisekaizen.sdss.management.web.resource;
 
 import com.bitwisekaizen.sdss.management.dto.AgentNodeAffinity;
 import com.bitwisekaizen.sdss.management.service.AgentNodeAffinityNotFoundException;
+import com.bitwisekaizen.sdss.management.service.AgentNodeAffinityService;
 import com.wordnik.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.validation.ConstraintViolationException;
@@ -20,10 +22,13 @@ import static org.apache.http.HttpStatus.SC_NOT_FOUND;
  * Resource to manage agent node affinity.
  */
 @Component
-@Path("agentnodeaffinities")
-@Api(value = "/agentnodeaffinities: Operations to manage agent node affinity")
+@Path("affinities")
+@Api(value = "/affinities: Operations to manage agent node affinity")
 public class AgentNodeAffinityResource {
     final static Logger logger = LoggerFactory.getLogger(AgentNodeAffinityResource.class);
+
+    @Autowired
+    private AgentNodeAffinityService agentNodeAffinityService;
 
     /**
      * Create the storage node affinity with the given spec.  If it exists, then update it.
@@ -40,7 +45,7 @@ public class AgentNodeAffinityResource {
     public AgentNodeAffinity createOrUpdateAgentAffinity(
             @ApiParam(value = "Agent node affinity to create/update", required = true) AgentNodeAffinity affinity)
             throws ConstraintViolationException {
-        return null;
+        return agentNodeAffinityService.createOrUpdateAgentAffinity(affinity);
     }
 
     /**
@@ -58,7 +63,7 @@ public class AgentNodeAffinityResource {
     public AgentNodeAffinity getAgentAffinity(
             @ApiParam(value = "Key of the affinity", required = true) @PathParam("affinityKey") String affinityKey)
             throws AgentNodeAffinityNotFoundException {
-        return null;
+        return agentNodeAffinityService.getAgentAffinity(affinityKey);
     }
 
     /**
@@ -75,6 +80,7 @@ public class AgentNodeAffinityResource {
     public void deleteAgentAffinity(
             @ApiParam(value = "Key of the affinity", required = true) @PathParam("affinityKey") String affinityKey)
             throws AgentNodeAffinityNotFoundException {
+        agentNodeAffinityService.deleteAgentAffinity(affinityKey);
     }
 
     /**
@@ -87,7 +93,6 @@ public class AgentNodeAffinityResource {
     @ApiOperation(value = "Get all the agent node affinities", position = 10,
             response = AgentNodeAffinity.class, responseContainer = "List")
     public List<AgentNodeAffinity> getAllAgentAffinities() {
-        return null;
+        return agentNodeAffinityService.getAllAgentAffinities();
     }
-
 }
