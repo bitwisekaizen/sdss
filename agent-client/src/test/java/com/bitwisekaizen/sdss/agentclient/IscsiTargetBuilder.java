@@ -14,6 +14,7 @@ public class IscsiTargetBuilder implements Builder<IscsiTarget> {
     private List<String> hostIscsiQualifiedNames = new ArrayList<>();
     private int capacityInMb = ThreadLocalRandom.current().nextInt(10000, 20000);
     private String targetName = UUID.randomUUID().toString();
+    private String affinityKey = UUID.randomUUID().toString();
 
     public static IscsiTargetBuilder anIscsiTarget() {
         return new IscsiTargetBuilder();
@@ -21,7 +22,7 @@ public class IscsiTargetBuilder implements Builder<IscsiTarget> {
 
     @Override
     public IscsiTarget build() {
-        return new IscsiTarget(hostIscsiQualifiedNames, capacityInMb, targetName);
+        return new IscsiTarget(hostIscsiQualifiedNames, capacityInMb, targetName, affinityKey);
     }
 
     public IscsiTargetBuilder withTargetName(String targetName) {
@@ -39,6 +40,11 @@ public class IscsiTargetBuilder implements Builder<IscsiTarget> {
             hostIscsiQualifiedNames.add(iqn);
         }
 
+        return this;
+    }
+
+    public IscsiTargetBuilder withAffinityKey(String affinityKey) {
+        this.affinityKey = affinityKey;
         return this;
     }
 }

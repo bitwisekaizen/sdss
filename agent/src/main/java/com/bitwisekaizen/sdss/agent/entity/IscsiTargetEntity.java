@@ -22,14 +22,19 @@ public class IscsiTargetEntity {
     @Column(name = "capacity_mb")
     private int capacityInMb;
 
+    @Column(name = "affinity_key")
+    private String affinityKey;
+
     // Json serialization
     private IscsiTargetEntity() {
     }
 
-    public IscsiTargetEntity(List<String> hostIscsiQualifiedNames, int capacityInMb, String targetName) {
+    public IscsiTargetEntity(List<String> hostIscsiQualifiedNames, int capacityInMb, String targetName,
+                             String affinityKey) {
         this.hostIscsiQualifiedNames = hostIscsiQualifiedNames;
         this.capacityInMb = capacityInMb;
         this.targetName = targetName;
+        this.affinityKey = affinityKey;
     }
 
     /**
@@ -57,5 +62,9 @@ public class IscsiTargetEntity {
      */
     public String getTargetName() {
         return targetName;
+    }
+
+    public String getAffinityKey() {
+        return affinityKey;
     }
 }

@@ -126,7 +126,7 @@ public class IscsiTargetService {
 
         return new UniqueIscsiTargetEntity(initiatorIqnEntities, iscsiTarget.getCapacityInMb(),
                 iscsiTarget.getTargetName(), storageAgentClient.getStorageAgentUrl(),
-                accessibleIscsiTarget.getStorageNetworkAddresses().get(0));
+                accessibleIscsiTarget.getStorageNetworkAddresses().get(0), iscsiTarget.getAffinityKey());
     }
 
     private UniqueIscsiTarget convertToUniqueIscsiTarget(UniqueIscsiTargetEntity uniqueIscsiTargetEntity) {
@@ -141,6 +141,6 @@ public class IscsiTargetService {
         }
 
         return new IscsiTarget(hostIscsiQualifiedNames, uniqueIscsiTargetEntity.getCapacityInMb(),
-                uniqueIscsiTargetEntity.getTargetName());
+                uniqueIscsiTargetEntity.getTargetName(), uniqueIscsiTargetEntity.getAffinityKey());
     }
 }

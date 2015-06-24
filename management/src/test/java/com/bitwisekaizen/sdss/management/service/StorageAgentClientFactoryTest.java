@@ -3,8 +3,6 @@ package com.bitwisekaizen.sdss.management.service;
 import com.bitwisekaizen.sdss.agentclient.IscsiTarget;
 import com.bitwisekaizen.sdss.agentclient.StorageAgentClient;
 import com.bitwisekaizen.sdss.management.config.InMemoryStorageAgentClient;
-import org.hamcrest.core.Is;
-import org.hamcrest.core.IsNot;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
@@ -21,23 +19,23 @@ import static org.mockito.Mockito.when;
 public class StorageAgentClientFactoryTest {
 
     @Mock
-    private BestStorageAgentCalculator bestStorageAgentCalculator;
+    private AffinityBasedStorageAgentRetriever storageAgentRetriever;
     private StorageAgentClientFactory storageAgentClientFactory;
 
     @BeforeMethod
     public void beforeMethod() {
         MockitoAnnotations.initMocks(this);
 
-        storageAgentClientFactory = new StorageAgentClientFactory(true, bestStorageAgentCalculator);
+        storageAgentClientFactory = new StorageAgentClientFactory(true, storageAgentRetriever);
     }
 
     @Test
     public void factoryShouldReturnInMemoryClientForTesting() throws Exception {
         StorageAgentClientFactory storageAgentClientFactory =
-                new StorageAgentClientFactory(true, bestStorageAgentCalculator);
+                new StorageAgentClientFactory(true, storageAgentRetriever);
 
         IscsiTarget iscsiTarget = anIscsiTarget().build();
-        when(bestStorageAgentCalculator.getBestStorageAgent(iscsiTarget)).thenReturn(aStorageAgent().build());
+        when(storageAgentRetriever.getStorageAgent(iscsiTarget)).thenReturn(aStorageAgent().build());
 
         StorageAgentClient bestStorageAgent = storageAgentClientFactory.getBestStorageAgent(iscsiTarget);
 
@@ -49,7 +47,7 @@ public class StorageAgentClientFactoryTest {
         IscsiTarget iscsiTarget = anIscsiTarget().build();
         StorageAgent storageAgentWithFirstUrl = aStorageAgent().build();
         StorageAgent storageAgentWithSecondUrl = aStorageAgent().build();
-        when(bestStorageAgentCalculator.getBestStorageAgent(iscsiTarget)).thenReturn(storageAgentWithFirstUrl,
+        when(storageAgentRetriever.getStorageAgent(iscsiTarget)).thenReturn(storageAgentWithFirstUrl,
                 storageAgentWithFirstUrl, storageAgentWithSecondUrl);
 
         StorageAgentClient clientForFirstUrlFirstCall = storageAgentClientFactory.getBestStorageAgent(iscsiTarget);

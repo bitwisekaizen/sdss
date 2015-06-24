@@ -1,6 +1,7 @@
 CREATE TABLE iscsi_target (
     target_name VARCHAR(128) NOT NULL UNIQUE,
     capacity_mb INTEGER NOT NULL,
+    affinity_key VARCHAR(128) NOT NULL,
     PRIMARY KEY (target_name)
 );
 

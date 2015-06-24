@@ -29,15 +29,15 @@ public class StorageAgentClientFactory {
 
     private static Map<String, StorageAgentClient> storageAgentClients = new HashMap<>();
     private final boolean runningIntegrationTest;
-    private final BestStorageAgentCalculator bestStorageAgentCalculator;
+    private final AffinityBasedStorageAgentRetriever storageAgentRetriever;
 
     @Autowired
     public StorageAgentClientFactory(
             @Value("${app.running.integration.test}") boolean runningIntegrationTest,
-            BestStorageAgentCalculator bestStorageAgentCalculator) {
+            AffinityBasedStorageAgentRetriever storageAgentRetriever) {
 
         this.runningIntegrationTest = runningIntegrationTest;
-        this.bestStorageAgentCalculator = bestStorageAgentCalculator;
+        this.storageAgentRetriever = storageAgentRetriever;
     }
 
     /**
@@ -47,9 +47,9 @@ public class StorageAgentClientFactory {
      * @return "best" storage agent that can be used to create the iscsi target.
      */
     public synchronized StorageAgentClient getBestStorageAgent(IscsiTarget iscsiTarget) {
-        StorageAgent bestStorageAgent = bestStorageAgentCalculator.getBestStorageAgent(iscsiTarget);
+        StorageAgent bestStorageAgent = storageAgentRetriever.getStorageAgent(iscsiTarget);
 
-        String serverUrl = bestStorageAgent.getServerUrl();
+        String serverUrl = bestStorageAgent.getAgentNode();
 
         StorageAgentClient storageAgentClient = storageAgentClients.get(serverUrl);
         if (storageAgentClient != null) {

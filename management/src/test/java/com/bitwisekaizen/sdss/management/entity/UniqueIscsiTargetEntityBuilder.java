@@ -1,7 +1,6 @@
 package com.bitwisekaizen.sdss.management.entity;
 
 import com.bitwisekaizen.sdss.agentclient.IscsiTarget;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.builder.Builder;
 
 import java.util.ArrayList;
@@ -19,6 +18,7 @@ public class UniqueIscsiTargetEntityBuilder implements Builder<UniqueIscsiTarget
     private String targetName = "targetName-" + UUID.randomUUID().toString();
     private String storageHost = "storageHost-" + UUID.randomUUID().toString();;
     private String storageAgentUrl = "http://" + randomAlphabetic(4) + ".example.com";
+    private String affinityKey = "affinityKey-" + UUID.randomUUID().toString();
 
     private UniqueIscsiTargetEntityBuilder() {
     }
@@ -42,12 +42,13 @@ public class UniqueIscsiTargetEntityBuilder implements Builder<UniqueIscsiTarget
 
         uniqueIscsiTargetEntityBuilder.capacityInMb = iscsiTarget.getCapacityInMb();
         uniqueIscsiTargetEntityBuilder.targetName = iscsiTarget.getTargetName();
+        uniqueIscsiTargetEntityBuilder.affinityKey = iscsiTarget.getAffinityKey();
         return uniqueIscsiTargetEntityBuilder;
     }
 
     @Override public UniqueIscsiTargetEntity build() {
         UniqueIscsiTargetEntity uniqueIscsiTargetEntity =
-                new UniqueIscsiTargetEntity(initiatorIqnEntities, capacityInMb, targetName, storageAgentUrl, storageHost);
+                new UniqueIscsiTargetEntity(initiatorIqnEntities, capacityInMb, targetName, storageAgentUrl, storageHost, affinityKey);
 
         uniqueIscsiTargetEntity.setUuid(uuid);
         return uniqueIscsiTargetEntity;

@@ -38,17 +38,21 @@ public class UniqueIscsiTargetEntity {
     @Column(name = "storage_host")
     private String storageHost;
 
+    @Column(name = "affinity_key")
+    private String affinityKey;
+
     protected UniqueIscsiTargetEntity() {
     }
 
     public UniqueIscsiTargetEntity(List<InitiatorIqnEntity> initiatorIqnEntities, int capacityInMb, String targetName,
-                                   String storageAgentUrl, String storageHost) {
+                                   String storageAgentUrl, String storageHost, String affinityKey) {
         this();
         this.initiatorIqnEntities = initiatorIqnEntities;
         this.capacityInMb = capacityInMb;
         this.targetName = targetName;
         this.storageAgentUrl = storageAgentUrl;
         this.storageHost = storageHost;
+        this.affinityKey = affinityKey;
     }
 
     /**
@@ -103,6 +107,15 @@ public class UniqueIscsiTargetEntity {
      */
     public String getStorageHost() {
         return storageHost;
+    }
+
+    /**
+     * The affinity key that was used to determine the storage agent.
+     *
+     * @return affinity key that was used to determine the storage agent.
+     */
+    public String getAffinityKey() {
+        return affinityKey;
     }
 
     @Override

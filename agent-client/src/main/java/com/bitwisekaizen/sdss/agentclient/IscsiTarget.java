@@ -18,14 +18,18 @@ public class IscsiTarget {
     @NotEmpty(message = "target.name.empty")
     private String targetName;
 
+    @NotEmpty(message = "affinity.key.empty")
+    private String affinityKey;
+
     // Json serialization
     private IscsiTarget() {
     }
 
-    public IscsiTarget(List<String> hostIscsiQualifiedNames, int capacityInMb, String targetName) {
+    public IscsiTarget(List<String> hostIscsiQualifiedNames, int capacityInMb, String targetName, String affinityKey) {
         this.hostIscsiQualifiedNames = hostIscsiQualifiedNames;
         this.capacityInMb = capacityInMb;
         this.targetName = targetName;
+        this.affinityKey = affinityKey;
     }
 
     /**
@@ -57,5 +61,9 @@ public class IscsiTarget {
     @ApiModelProperty(value = "Name of the target", required = true)
     public String getTargetName() {
         return targetName;
+    }
+
+    public String getAffinityKey() {
+        return affinityKey;
     }
 }

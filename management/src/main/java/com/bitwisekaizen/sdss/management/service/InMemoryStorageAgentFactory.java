@@ -19,6 +19,6 @@ public class InMemoryStorageAgentFactory extends StorageAgentFactory {
 
     @Override
     public List<StorageAgent> getHealthyStorageAgents() {
-        return Arrays.asList(new StorageAgent("http://test.example.com"));
+        return Arrays.asList(new StorageAgent("test.example.com", 8080));
     }
 }

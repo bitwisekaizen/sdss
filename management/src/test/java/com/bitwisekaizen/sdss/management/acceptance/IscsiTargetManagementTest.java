@@ -1,7 +1,9 @@
 package com.bitwisekaizen.sdss.management.acceptance;
 
 import com.bitwisekaizen.sdss.agentclient.IscsiTarget;
+import com.bitwisekaizen.sdss.agentclient.IscsiTargetBuilder;
 import com.bitwisekaizen.sdss.management.dto.AgentNodeAffinity;
+import com.bitwisekaizen.sdss.management.dto.AgentNodeAffinityBuilder;
 import com.bitwisekaizen.sdss.management.dto.UniqueIscsiTarget;
 import com.bitwisekaizen.sdss.management.dto.UniqueIscsiTargetBuilder;
 import com.bitwisekaizen.sdss.management.util.ReflectionMatcherUtil;
@@ -20,9 +22,9 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 
-import static com.bitwisekaizen.sdss.agentclient.IscsiTargetBuilder.anIscsiTarget;
 import static com.bitwisekaizen.sdss.management.dto.AgentNodeAffinityBuilder.anAgentNodeAffinity;
 import static com.bitwisekaizen.sdss.management.util.ReflectionMatcherUtil.reflectionMatching;
 import static org.hamcrest.CoreMatchers.*;
@@ -38,11 +40,13 @@ public class IscsiTargetManagementTest extends AbstractAcceptanceTest {
     @BeforeMethod
     public void beforeMethod() {
         afterMethod();
+        affinityCreated = affinityOperations.createOrUpdateAgentNodeAffinity(anAgentNodeAffinity().build());
     }
 
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
         deleteAllUniqueIscsiTargets();
+        affinityOperations.deleteAllAgentNodeAffinities();
     }
 
     @Test
@@ -75,6 +79,11 @@ public class IscsiTargetManagementTest extends AbstractAcceptanceTest {
     @Test(expectedExceptions = BadRequestException.class)
     public void cannotCreateIscsiTargetIfValidationFails() {
         createUniqueIscsiTarget(anIscsiTarget().withTargetName("").build());
+    }
+
+    @Test(expectedExceptions = NotFoundException.class)
+    public void cannotCreateIscsiTargetIfNoMatchingAffinityIsFound() {
+        createUniqueIscsiTarget(anIscsiTarget().withAffinityKey(UUID.randomUUID().toString()).build());
     }
 
     @Test
@@ -128,6 +137,10 @@ public class IscsiTargetManagementTest extends AbstractAcceptanceTest {
         for (UniqueIscsiTarget uniqueIscsiTargetSpecToDelete : uniqueIscsiTargetsCreated) {
             assertThat(uniqueIscsiTargetsReceived, not(hasItem(uniqueIscsiTargetSpecToDelete)));
         }
+    }
+
+    private IscsiTargetBuilder anIscsiTarget() {
+        return IscsiTargetBuilder.anIscsiTarget().withAffinityKey(affinityCreated.getAffinityKey());
     }
 
     private Callable<UniqueIscsiTarget> createCallableToCreateTarget(final WebTarget webTarget, final IscsiTarget iscsiTarget) {

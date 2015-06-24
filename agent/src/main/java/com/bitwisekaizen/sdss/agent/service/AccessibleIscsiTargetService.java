@@ -107,12 +107,13 @@ public class AccessibleIscsiTargetService {
 
     private AccessibleIscsiTarget convertToDto(IscsiTargetEntity entity) {
         IscsiTarget iscsiTarget = new IscsiTarget(
-                entity.getHostIscsiQualifiedNames(), entity.getCapacityInMb(), entity.getTargetName());
+                entity.getHostIscsiQualifiedNames(), entity.getCapacityInMb(), entity.getTargetName(),
+                entity.getAffinityKey());
         return new AccessibleIscsiTarget(iscsiTarget, storageNetworkAddresses);
     }
 
     private IscsiTargetEntity convertToPersistenceEntity(IscsiTarget iscsiTarget) {
         return new IscsiTargetEntity(iscsiTarget.getHostIscsiQualifiedNames(),
-                iscsiTarget.getCapacityInMb(), iscsiTarget.getTargetName());
+                iscsiTarget.getCapacityInMb(), iscsiTarget.getTargetName(), iscsiTarget.getAffinityKey());
     }
 }

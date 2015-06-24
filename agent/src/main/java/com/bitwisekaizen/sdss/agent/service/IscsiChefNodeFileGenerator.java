@@ -52,7 +52,7 @@ public class IscsiChefNodeFileGenerator {
                     accessibleIscsiTarget.getIscsiTarget().getHostIscsiQualifiedNames());
             IscsiTarget oldIscsiTarget = accessibleIscsiTarget.getIscsiTarget();
             IscsiTarget newIscsiTarget = new IscsiTarget(decoratedIqns,
-                    oldIscsiTarget.getCapacityInMb(), oldIscsiTarget.getTargetName());
+                    oldIscsiTarget.getCapacityInMb(), oldIscsiTarget.getTargetName(), oldIscsiTarget.getAffinityKey());
             newAccessibleIscsiTargets.add(
                     new AccessibleIscsiTarget(newIscsiTarget, accessibleIscsiTarget.getStorageNetworkAddresses()));
         }

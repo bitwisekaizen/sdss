@@ -4,6 +4,7 @@ CREATE TABLE unique_iscsi_target (
     target_name VARCHAR(128) NOT NULL UNIQUE,
     storage_agent_url VARCHAR(256) NOT NULL,
     storage_host VARCHAR(64) NOT NULL,
+    affinity_key VARCHAR(128) NOT NULL,
     PRIMARY KEY (uuid)
 );
 

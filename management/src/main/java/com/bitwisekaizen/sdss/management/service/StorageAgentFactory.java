@@ -88,6 +88,6 @@ public class StorageAgentFactory {
     private StorageAgent convertToStorageAgent(ServiceHealth serviceHealth) {
         String host = serviceHealth.getNode().getAddress();
         int port = serviceHealth.getService().getPort();
-        return new StorageAgent("http://" + host + ":" + port);
+        return new StorageAgent(host, port);
     }
 }

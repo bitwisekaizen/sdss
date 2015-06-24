@@ -13,7 +13,8 @@ public class IscsiTargetEntityBuilder implements Builder<IscsiTargetEntity> {
 
     private List<String> hostIscsiQualifiedNames = new ArrayList<>();
     private int capacityInMb = ThreadLocalRandom.current().nextInt(10000, 20000);
-    private String targetName = UUID.randomUUID().toString();
+    private String targetName = "targetName-" + UUID.randomUUID().toString();
+    private String affinityKey = "affinityKey-" + UUID.randomUUID().toString();
 
     public static IscsiTargetEntityBuilder anIscsiTargetEntity() {
         IscsiTargetEntityBuilder builder = new IscsiTargetEntityBuilder();
@@ -24,7 +25,7 @@ public class IscsiTargetEntityBuilder implements Builder<IscsiTargetEntity> {
 
     @Override
     public IscsiTargetEntity build() {
-        return new IscsiTargetEntity(hostIscsiQualifiedNames, capacityInMb, targetName);
+        return new IscsiTargetEntity(hostIscsiQualifiedNames, capacityInMb, targetName, affinityKey);
     }
 
     public IscsiTargetEntityBuilder withTargetName(String targetName) {
