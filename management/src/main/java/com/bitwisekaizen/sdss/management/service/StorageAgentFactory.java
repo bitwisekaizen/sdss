@@ -86,7 +86,7 @@ public class StorageAgentFactory {
     }
 
     private StorageAgent convertToStorageAgent(ServiceHealth serviceHealth) {
-        String host = serviceHealth.getNode().getAddress();
+        String host = serviceHealth.getNode().getNode();
         int port = serviceHealth.getService().getPort();
         return new StorageAgent(host, port);
     }
