@@ -3,6 +3,8 @@ package com.bitwisekaizen.sdss.management.service;
 import com.bitwisekaizen.sdss.agentclient.IscsiTarget;
 import com.bitwisekaizen.sdss.management.entity.AgentNodeAffinityEntity;
 import com.bitwisekaizen.sdss.management.repository.AgentNodeAffinityRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,6 +17,7 @@ import java.util.Random;
  */
 @Component
 public class AffinityBasedStorageAgentRetriever {
+    final static Logger logger = LoggerFactory.getLogger(AffinityBasedStorageAgentRetriever.class);
 
     private final Random random = new Random();
     private boolean runningIntegrationTest;
@@ -57,6 +60,12 @@ public class AffinityBasedStorageAgentRetriever {
             }
         }
 
-        throw new AgentNodeNotFoundException(iscsiTarget.getAffinityKey());
+        logger.info("List of healthy agent nodes");
+        for (StorageAgent storageAgent : healthyStorageAgents) {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(storageAgent.getAgentNode()).append("\n");
+        }
+
+        throw new AgentNodeNotFoundException(affinityEntity.getAgentNode());
     }
 }

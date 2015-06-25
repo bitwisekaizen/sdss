@@ -63,6 +63,12 @@ public class IscsiTarget {
         return targetName;
     }
 
+    /**
+     * Get the affinity key (i.e. user name) that determines where to create target on.
+     *
+     * @return affinity key.
+     */
+    @ApiModelProperty(value = "Affinity key (i.e. user name) that determines where to create target on.", required = true)
     public String getAffinityKey() {
         return affinityKey;
     }
