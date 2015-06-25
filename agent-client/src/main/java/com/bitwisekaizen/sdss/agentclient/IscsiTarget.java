@@ -4,6 +4,8 @@ import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 /**
@@ -13,6 +15,9 @@ import java.util.List;
 public class IscsiTarget {
 
     private List<String> hostIscsiQualifiedNames;
+
+    @Min(value = 500, message = "capacity.size.too.small")
+    @Max(value = 1000000, message = "capacity.size.too.large")
     private int capacityInMb;
 
     @NotEmpty(message = "target.name.empty")

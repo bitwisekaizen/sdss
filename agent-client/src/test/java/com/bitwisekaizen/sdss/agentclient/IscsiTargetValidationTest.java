@@ -39,6 +39,27 @@ public class IscsiTargetValidationTest {
         assertThat(violations, hasItem(matchingMessage("target.name.empty")));
     }
 
+    @Test
+    public void validationShouldFailEmptyAffinityKey() {
+        Set<ConstraintViolation<IscsiTarget>> violations = getViolations(anIscsiTarget().withAffinityKey("").build());
+
+        assertThat(violations, hasSize(1));
+        assertThat(violations, hasItem(matchingMessage("affinity.key.empty")));
+    }
+
+    @Test
+    public void validationShouldFailInvalidCapacitySizes() {
+        Set<ConstraintViolation<IscsiTarget>> violations = getViolations(anIscsiTarget().withCapacityInMb(50).build());
+
+        assertThat(violations, hasSize(1));
+        assertThat(violations, hasItem(matchingMessage("capacity.size.too.small")));
+
+        violations = getViolations(anIscsiTarget().withCapacityInMb(2000000).build());
+
+        assertThat(violations, hasSize(1));
+        assertThat(violations, hasItem(matchingMessage("capacity.size.too.large")));
+    }
+
     protected <T> Set<ConstraintViolation<T>> getViolations(T objectToValidate) {
         return validator.validate(objectToValidate);
     }
