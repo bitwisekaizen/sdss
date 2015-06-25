@@ -49,7 +49,7 @@ public class StorageAgentClientFactory {
     public synchronized StorageAgentClient getBestStorageAgent(IscsiTarget iscsiTarget) {
         StorageAgent bestStorageAgent = storageAgentRetriever.getStorageAgent(iscsiTarget);
 
-        String serverUrl = bestStorageAgent.getAgentNode();
+        String serverUrl = bestStorageAgent.getServerUrl();
 
         StorageAgentClient storageAgentClient = storageAgentClients.get(serverUrl);
         if (storageAgentClient != null) {

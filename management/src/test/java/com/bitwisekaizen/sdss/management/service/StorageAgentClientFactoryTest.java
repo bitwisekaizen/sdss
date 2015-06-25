@@ -56,5 +56,7 @@ public class StorageAgentClientFactoryTest {
 
         assertThat(clientForFirstUrlFirstCall, is(clientForFirstUrlSecondCall));
         assertThat(clientForSecondUrl, is(not(clientForFirstUrlSecondCall)));
+        assertThat(clientForFirstUrlFirstCall.getStorageAgentUrl(), is(storageAgentWithFirstUrl.getServerUrl()));
+        assertThat(clientForSecondUrl.getStorageAgentUrl(), is(storageAgentWithSecondUrl.getServerUrl()));
     }
 }
