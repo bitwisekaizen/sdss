@@ -68,20 +68,6 @@ public class StorageAgentClientFactory {
         return storageAgentClient;
     }
 
-    /**
-     * Get the storage agent client used to creating the specified unique ISCSI target.
-     *
-     * @param uniqueIscsiTargetEntity target to find the client for
-     * @return storage agent client used to creating the specified unique ISCSI target.
-     */
-    public synchronized StorageAgentClient getStorageClientUsedInCreating(UniqueIscsiTargetEntity uniqueIscsiTargetEntity) {
-        StorageAgentClient storageAgentClient = storageAgentClients.get(uniqueIscsiTargetEntity.getStorageAgentUrl());
-        if (storageAgentClient == null) {
-            throw new IllegalStateException("We should never get into this error condition where we can't find client.");
-        }
-        return storageAgentClient;
-    }
-
     private WebTarget createClient(String serverUrl) {
         ClientConfig clientConfig = new ClientConfig().connectorProvider(new ApacheConnectorProvider());
         // https://java.net/jira/browse/JERSEY-2373

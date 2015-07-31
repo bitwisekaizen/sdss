@@ -110,7 +110,7 @@ public class IscsiTargetService {
         uniqueIscsiTargetRepository.delete(uniqueIscsiTargetEntity.getUuid());
 
         StorageAgentClient storageAgentClient =
-                storageAgentClientFactory.getStorageClientUsedInCreating(uniqueIscsiTargetEntity);
+                storageAgentClientFactory.getBestStorageAgent(convertToIscsiTarget(uniqueIscsiTargetEntity));
 
         storageAgentClient.deleteIscsiTarget(uniqueIscsiTargetEntity.getTargetName());
     }
