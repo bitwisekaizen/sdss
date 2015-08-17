@@ -11,7 +11,7 @@
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>target/test-logs/test.log</file>
+        <file>target/test-logs/sdss-master-test.log</file>
         <append>false</append>
         <encoder>
             <pattern>%d{dd-MMM-yyyy;HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>

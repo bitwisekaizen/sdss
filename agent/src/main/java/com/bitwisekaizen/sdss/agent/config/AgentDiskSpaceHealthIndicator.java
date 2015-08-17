@@ -2,6 +2,8 @@ package com.bitwisekaizen.sdss.agent.config;
 
 import com.bitwisekaizen.sdss.agent.entity.IscsiTargetEntity;
 import com.bitwisekaizen.sdss.agent.repository.IscsiTargetEntityRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.DiskSpaceHealthIndicatorProperties;
@@ -16,6 +18,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Service("diskSpaceHealthIndicator")
 public class AgentDiskSpaceHealthIndicator extends AbstractHealthIndicator {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AgentDiskSpaceHealthIndicator.class);
 
     public static final double MB_TO_GB_FACTOR = Math.pow(2, 10);
     public static final double BYTE_TO_GB_FACTOR = Math.pow(2, 30);
@@ -37,6 +40,7 @@ public class AgentDiskSpaceHealthIndicator extends AbstractHealthIndicator {
     @Scheduled(fixedDelay = 30*60*1000)
     @Transactional(readOnly = true)
     public void updateProvisionedDiskSpaceValue() {
+        LOGGER.info("Running disk space checker");
         Iterable<IscsiTargetEntity> targetEntities = iscsiTargetEntityRepository.findAll();
 
         long diskSpaceInMb = 0;
@@ -44,11 +48,14 @@ public class AgentDiskSpaceHealthIndicator extends AbstractHealthIndicator {
             diskSpaceInMb += iscsiTargetEntity.getCapacityInMb();
         }
 
-        provisionedDiskSpaceInGb.set((long) (diskSpaceInMb / MB_TO_GB_FACTOR));
+        long diskSpaceInGb = (long) (diskSpaceInMb / MB_TO_GB_FACTOR);
+        provisionedDiskSpaceInGb.set(diskSpaceInGb);
+        LOGGER.info("Setting disk space to be in GB " + diskSpaceInGb);
     }
 
     @Override
     protected void doHealthCheck(Health.Builder builder) throws Exception {
+
         File file = this.properties.getPath();
 
         long diskFreeInBytes = file.getFreeSpace();
@@ -60,8 +67,10 @@ public class AgentDiskSpaceHealthIndicator extends AbstractHealthIndicator {
 
         if (diskFreeInBytes >= this.properties.getThreshold()) {
             builder.up();
+            LOGGER.info("It's up");
         } else {
             builder.down();
+            LOGGER.info("It's down");
         }
     }
 }
