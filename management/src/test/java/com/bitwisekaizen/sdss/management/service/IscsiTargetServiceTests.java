@@ -59,8 +59,9 @@ public class IscsiTargetServiceTests {
                 .withStorageNetworkAddress(STORAGE_HOST).build();
         IscsiTarget iscsiTarget = accessibleIscsiTarget.getIscsiTarget();
         StorageAgentClient storageAgentClient = mock(StorageAgentClient.class);
-        when(uniqueIscsiTargetRepository.save(any(UniqueIscsiTargetEntity.class))).thenReturn(
-                aUniqueIscsiTargetEntityFrom(iscsiTarget).withStorageHost(STORAGE_HOST).build());
+        UniqueIscsiTargetEntity uniqueIscsiTargetEntity =
+                aUniqueIscsiTargetEntityFrom(iscsiTarget).withStorageHost(STORAGE_HOST).build();
+        when(uniqueIscsiTargetRepository.save(any(UniqueIscsiTargetEntity.class))).thenReturn(uniqueIscsiTargetEntity);
 
         when(storageAgentClientFactory.getBestStorageAgent(iscsiTarget)).thenReturn(storageAgentClient);
         when(storageAgentClient.createIscsiTarget(iscsiTarget)).thenReturn(accessibleIscsiTarget);
@@ -74,6 +75,7 @@ public class IscsiTargetServiceTests {
         assertThat(uniqueIscsiTarget.getIscsiTarget(), reflectionMatching(iscsiTarget));
         assertThat(uniqueIscsiTarget.getUuid(), notNullValue());
         assertThat(uniqueIscsiTarget.getStorageIpAddress(), equalTo(STORAGE_HOST));
+        assertThat(uniqueIscsiTarget.getStorageAgentUrl(), equalTo(uniqueIscsiTargetEntity.getStorageAgentUrl()));
     }
 
     @Test

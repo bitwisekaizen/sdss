@@ -131,7 +131,8 @@ public class IscsiTargetService {
 
     private UniqueIscsiTarget convertToUniqueIscsiTarget(UniqueIscsiTargetEntity uniqueIscsiTargetEntity) {
         IscsiTarget iscsiTarget = convertToIscsiTarget(uniqueIscsiTargetEntity);
-        return new UniqueIscsiTarget(uniqueIscsiTargetEntity.getUuid(), uniqueIscsiTargetEntity.getStorageHost(), iscsiTarget);
+        return new UniqueIscsiTarget(uniqueIscsiTargetEntity.getUuid(), uniqueIscsiTargetEntity.getStorageHost(),
+                uniqueIscsiTargetEntity.getStorageAgentUrl(), iscsiTarget);
     }
 
     private IscsiTarget convertToIscsiTarget(UniqueIscsiTargetEntity uniqueIscsiTargetEntity) {

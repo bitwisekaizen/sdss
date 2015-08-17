@@ -60,6 +60,7 @@ public class IscsiTargetManagementTest extends AbstractAcceptanceTest {
         assertThat(targetCreated.getIscsiTarget(), reflectionMatching(targetToCreate));
         assertThat(targetCreated.getUuid(), notNullValue());
         assertThat(targetCreated.getStorageIpAddress(), notNullValue());
+        assertThat(targetCreated.getStorageAgentUrl(), notNullValue());
     }
 
     @Test

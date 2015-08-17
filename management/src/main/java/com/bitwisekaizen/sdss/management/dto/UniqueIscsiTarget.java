@@ -14,6 +14,7 @@ public class UniqueIscsiTarget {
 
     private String uuid;
     private String storageIpAddress;
+    private String storageAgentUrl;
     private IscsiTarget iscsiTarget;
 
 
@@ -21,9 +22,10 @@ public class UniqueIscsiTarget {
     private UniqueIscsiTarget() {
     }
 
-    public UniqueIscsiTarget(String uuid, String storageIpAddress, IscsiTarget iscsiTarget) {
+    public UniqueIscsiTarget(String uuid, String storageIpAddress, String storageAgentUrl, IscsiTarget iscsiTarget) {
         this.uuid = uuid;
         this.storageIpAddress = storageIpAddress;
+        this.storageAgentUrl = storageAgentUrl;
         this.iscsiTarget = iscsiTarget;
     }
 
@@ -48,6 +50,16 @@ public class UniqueIscsiTarget {
     }
 
     /**
+     * Get the management URL of the agent node.
+     *
+     * @return mangement URL of the agent node.
+     */
+    @ApiModelProperty(value = "Management URL of the agent node.", required = true)
+    public String getStorageAgentUrl() {
+        return storageAgentUrl;
+    }
+
+    /**
      * Get spec describing the ISCSI target.
      *
      * @return ISCSI target spec.
@@ -64,4 +76,5 @@ public class UniqueIscsiTarget {
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
     }
+
 }
