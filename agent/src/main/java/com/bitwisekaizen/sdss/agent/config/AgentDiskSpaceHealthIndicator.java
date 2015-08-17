@@ -55,6 +55,7 @@ public class AgentDiskSpaceHealthIndicator extends AbstractHealthIndicator {
 
     @Override
     protected void doHealthCheck(Health.Builder builder) throws Exception {
+        LOGGER.info("Checking disk space");
 
         File file = this.properties.getPath();
 
