@@ -35,9 +35,10 @@ public class AgentDiskSpaceHealthIndicator extends AbstractHealthIndicator {
         this.iscsiTargetEntityRepository = iscsiTargetEntityRepository;
     }
 
-//    @Scheduled(fixedDelay=30000)
+
     // Every 30 minutes, update the diskspace provisioned
-    @Scheduled(fixedDelay = 30*60*1000)
+    //@Scheduled(fixedDelay = 30*60*1000)
+    @Scheduled(fixedDelay=30000)
     @Transactional(readOnly = true)
     public void updateProvisionedDiskSpaceValue() {
         LOGGER.info("Running disk space checker");
