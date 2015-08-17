@@ -22,10 +22,11 @@ public class HealthyCheckTest extends AbstractAcceptanceTest {
     }
 
     @Test
-    public void canGetHealthCheck() {
+    public void canGetHealthCheck() throws InterruptedException {
         IscsiTarget iscsiTargetToCreate = anIscsiTarget().build();
         storageAgentClient.createIscsiTarget(iscsiTargetToCreate);
 
+        Thread.sleep(3000);
         HealthCheck healthCheck = storageAgentClient.getHealthCheck();
 
         assertThat(healthCheck.getDiskspaceHealthyCheck().getStatus(), is("UP"));
