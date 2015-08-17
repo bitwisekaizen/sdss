@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.File;
 import java.util.concurrent.atomic.AtomicLong;
 
-
+// Bean name the same as one in HealthIndicatorAutoConfiguration to override DiskSpaceHealthIndicator.
 @Service("diskSpaceHealthIndicator")
 public class AgentDiskSpaceHealthIndicator extends AbstractHealthIndicator {
     private static final Logger LOGGER = LoggerFactory.getLogger(AgentDiskSpaceHealthIndicator.class);
@@ -37,11 +37,9 @@ public class AgentDiskSpaceHealthIndicator extends AbstractHealthIndicator {
 
 
     // Every 30 minutes, update the diskspace provisioned
-    //@Scheduled(fixedDelay = 30*60*1000)
-    @Scheduled(fixedDelay=30000)
+    @Scheduled(fixedDelay = 30*60*1000)
     @Transactional(readOnly = true)
     public void updateProvisionedDiskSpaceValue() {
-        LOGGER.info("Running disk space checker");
         Iterable<IscsiTargetEntity> targetEntities = iscsiTargetEntityRepository.findAll();
 
         long diskSpaceInMb = 0;
@@ -56,8 +54,6 @@ public class AgentDiskSpaceHealthIndicator extends AbstractHealthIndicator {
 
     @Override
     protected void doHealthCheck(Health.Builder builder) throws Exception {
-        LOGGER.info("Checking disk space");
-
         File file = this.properties.getPath();
 
         long diskFreeInBytes = file.getFreeSpace();
@@ -69,10 +65,9 @@ public class AgentDiskSpaceHealthIndicator extends AbstractHealthIndicator {
 
         if (diskFreeInBytes >= this.properties.getThreshold()) {
             builder.up();
-            LOGGER.info("It's up");
         } else {
             builder.down();
-            LOGGER.info("It's down");
+            LOGGER.info("Node is unhealthy due to low diskspace");
         }
     }
 }
